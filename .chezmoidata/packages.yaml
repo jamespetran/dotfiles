@@ -1,0 +1,33 @@
+packages:
+  darwin:
+    brews:
+      - git
+      - curl
+      - fzf
+      - fd
+      - ripgrep
+      - bat
+      - zoxide
+      - eza
+      - bitwarden-cli
+  linux:
+    apt:
+      - zsh
+      - git
+      - curl
+      - fzf
+      - fd-find
+      - ripgrep
+      - bat
+      - zoxide
+      - util‑linux-user
+    dnf:
+      - zsh
+      - git
+      - curl
+      - fzf
+      - fd-find
+      - ripgrep
+      - bat
+      - zoxide
+      - util‑linux-user
