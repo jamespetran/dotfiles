@@ -31,11 +31,14 @@ fi
 # Add brew to the current shell's PATH to use it immediately.
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 brew update
-if brew install --force-bottle fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr lazygit gh direnv git-lfs aria2; then
-  echo "🍺 Installed all tools from bottles"
+if brew install --force-bottle --no-build-from-source \
+     fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr \
+     lazygit gh direnv git-lfs aria2 zellij; then
+  echo "🍺 All tools (incl. zellij) installed from bottles"
 else
-  echo "⚠️  Bottle unavailable for some tools; falling back to source build"
-  brew install fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr lazygit gh direnv git-lfs aria2
+  echo "⚠️  Some bottles missing; falling back to explicit source builds"
+  brew install fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr \
+               lazygit gh direnv git-lfs aria2 zellij
 fi
 
 # --- Layer 2: Language Toolchains (Official Installers) ---
