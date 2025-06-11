@@ -13,6 +13,14 @@ alias gco='git checkout'
 alias glg='git log --oneline --decorate --graph --all'
 alias gcl='git clone'
 
+# Rust
+alias cb='cargo build'
+alias cr='cargo run'
+alias ct='cargo test'
+alias cl='cargo clippy'
+alias cf='cargo fmt'
+alias cw='cargo watch -x check'
+
 # zoxide (better cd)
 eval "$(zoxide init zsh)"
 
@@ -36,3 +44,11 @@ fi
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ~='cd ~'
+
+# Coding helpers
+alias k='kubectl'
+alias python='python3'
+alias pip='pip3'
+alias serve='python3 -m http.server 8000'
+alias ports='ss -tulpn'
+alias grep='grep --color=auto'
