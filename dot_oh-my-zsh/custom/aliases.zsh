@@ -25,7 +25,7 @@ alias cw='cargo watch -x check'
 eval "$(zoxide init zsh)"
 
 # App launchers
-alias idea='flatpak run com.jetbrains.IntelliJ-IDEA-Ultimate'
+alias idea='/var/home/james/.local/share/JetBrains/Toolbox/apps/intellij-idea-ultimate/bin/idea.sh'
 
 # Docker/Podman smart aliasing
 if command -v podman &> /dev/null && grep -q silverblue /etc/os-release 2>/dev/null; then
