@@ -1,2 +1,2 @@
 .cache/
-private_dot_ssh/private_config
+private_dot_ssh/*
