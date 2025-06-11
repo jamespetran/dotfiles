@@ -13,8 +13,9 @@ if command -v dnf >/dev/null 2>&1; then
   echo "→ Installing system foundation packages with DNF..."
   sudo dnf install -y \
     git curl zsh util-linux-user \
-    gcc-c++ cmake \
-    python3-pip python3-devel
+    gcc-c++ cmake make pkgconf-pkg-config \
+    python3-pip python3-devel \
+    openssl-devel perl perl-libs perl-core
 fi
 
 # --- Layer 1.5: User-Space Tools (Homebrew) ---
