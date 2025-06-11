@@ -70,6 +70,12 @@ export PATH="$PATH:$HOME/.local/bin"
 pipx install --include-deps huggingface_hub poetry
 
 # Install Rust apps with cargo
-cargo install zellij
+if command -v dnf >/dev/null 2>&1 && dnf list --quiet zellij >/dev/null 2>&1; then
+  sudo dnf install -y zellij
+elif command -v brew >/dev/null 2>&1; then
+  brew install zellij
+else
+  cargo install zellij
+fi
 
 echo "✅ Package setup complete."
