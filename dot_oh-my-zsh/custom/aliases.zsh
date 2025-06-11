@@ -52,3 +52,5 @@ alias pip='pip3'
 alias serve='python3 -m http.server 8000'
 alias ports='ss -tulpn'
 alias grep='grep --color=auto'
+
+alias cls='clear && printf "\e[3J"'
