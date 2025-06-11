@@ -31,26 +31,38 @@ fi
 # Add brew to the current shell's PATH to use it immediately.
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 brew update
-brew install \
-  fzf fd ripgrep bat zoxide eza git-delta btop \
-  jq yq tldr lazygit gh direnv git-lfs aria2
+if brew install --force-bottle fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr lazygit gh direnv git-lfs aria2; then
+  echo "🍺 Installed all tools from bottles"
+else
+  echo "⚠️  Bottle unavailable for some tools; falling back to source build"
+  brew install fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr lazygit gh direnv git-lfs aria2
+fi
 
 # --- Layer 2: Language Toolchains (Official Installers) ---
 echo "→ Layer 2: Installing language toolchains..."
 
-# Install Rust via rustup
-if ! command -v rustup >/dev/null 2>&1; then
-  echo "  → Installing rustup..."
+# Layer 2a: Try distro Rust first, then rustup fallback
+if command -v dnf >/dev/null 2>&1 && dnf list rust >/dev/null 2>&1; then
+  sudo dnf install -y rust cargo
+else
+  echo "→ Falling back to rustup installer"
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
   source "$HOME/.cargo/env"
   rustup default stable
 fi
 
-# Install Node.js via nvm
-export NVM_DIR="$HOME/.nvm"
-if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-  echo "  → Installing nvm..."
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+# Layer 2b: Try distro Node.js first, then nvm fallback
+if command -v dnf >/dev/null 2>&1 && dnf list nodejs >/dev/null 2>&1; then
+  sudo dnf install -y nodejs
+else
+  export NVM_DIR="$HOME/.nvm"
+  if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+    echo "  → Installing nvm..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  fi
+  # shellcheck source=/dev/null
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+  nvm install --lts
 fi
 
 # --- Layer 3: Isolated CLI Applications (pipx & cargo) ---
@@ -67,7 +79,15 @@ if ! command -v pipx >/dev/null 2>&1; then
   python3 -m pipx ensurepath
 fi
 export PATH="$PATH:$HOME/.local/bin"
-pipx install --include-deps huggingface_hub poetry
+# Layer 3a: DNF-packaged Python CLIs first
+if command -v dnf >/dev/null 2>&1; then
+  sudo dnf install -y python3-pipx python3-poetry
+else
+  python3 -m pip install --user pipx
+  python3 -m pipx ensurepath
+fi
+# Now ensure the rest of your Python tools
+pipx install --include-deps huggingface_hub
 
 # Install Rust apps with cargo
 if command -v dnf >/dev/null 2>&1 && dnf list --quiet zellij >/dev/null 2>&1; then
