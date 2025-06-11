@@ -22,6 +22,8 @@ fi
 echo "→ Installing user-space tools with Homebrew..."
 if ! command -v brew >/dev/null 2>&1; then
   echo "  → Homebrew not found. Installing..."
+  sudo mkdir -p /home/linuxbrew/.linuxbrew
+  sudo chown -R "$(whoami)" /home/linuxbrew/.linuxbrew
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
