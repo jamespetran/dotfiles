@@ -1,25 +1,28 @@
 # FZF configuration and keybindings with install method detection
 
-# --- Detect and source fzf from common install methods ---
+# Suppress output during shell init to avoid Powerlevel10k instant prompt warnings
+{
+  # --- Detect and source fzf from common install methods ---
 
-# Homebrew install (e.g. /home/linuxbrew)
-if [[ -f "/home/linuxbrew/.linuxbrew/opt/fzf/shell/key-bindings.zsh" ]]; then
-  source "/home/linuxbrew/.linuxbrew/opt/fzf/shell/key-bindings.zsh"
-  source "/home/linuxbrew/.linuxbrew/opt/fzf/shell/completion.zsh"
+  # Homebrew install (e.g. /home/linuxbrew)
+  if [[ -f "/home/linuxbrew/.linuxbrew/opt/fzf/shell/key-bindings.zsh" ]]; then
+    source "/home/linuxbrew/.linuxbrew/opt/fzf/shell/key-bindings.zsh"
+    source "/home/linuxbrew/.linuxbrew/opt/fzf/shell/completion.zsh"
 
-# Manual ~/.fzf install (e.g. via install script)
-elif [[ -f "$HOME/.fzf/shell/key-bindings.zsh" ]]; then
-  source "$HOME/.fzf/shell/key-bindings.zsh"
-  source "$HOME/.fzf/shell/completion.zsh"
+  # Manual ~/.fzf install (e.g. via install script)
+  elif [[ -f "$HOME/.fzf/shell/key-bindings.zsh" ]]; then
+    source "$HOME/.fzf/shell/key-bindings.zsh"
+    source "$HOME/.fzf/shell/completion.zsh"
 
-# Flatpak install (rare, not recommended — skip sourcing)
-elif command -v flatpak > /dev/null && flatpak info org.fzf.Fzf > /dev/null 2>&1; then
-  echo "fzf installed via Flatpak — skipping shell integration"
+  # Flatpak install (rare, not recommended — skip sourcing)
+  elif command -v flatpak > /dev/null && flatpak info org.fzf.Fzf > /dev/null 2>&1; then
+    : # silently skip shell integration
 
-# Not installed
-else
-  echo "⚠️  fzf not found or installed in a supported way. Shell integration skipped."
-fi
+  # Not installed
+  else
+    : # suppress noisy warning
+  fi
+} 2>/dev/null
 
 # --- FZF core settings ---
 export FZF_DEFAULT_COMMAND='fd --type f'
