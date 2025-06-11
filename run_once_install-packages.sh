@@ -22,7 +22,7 @@ fi
 echo "→ Installing user-space tools with Homebrew..."
 if ! command -v brew >/dev/null 2>&1; then
   echo "  → Homebrew not found. Installing..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # Add brew to the current shell's PATH to use it immediately.
