@@ -32,7 +32,7 @@ plugins=(
   z
   fzf
   docker
-  ssh-agent
+#  ssh-agent
   history-substring-search
   zsh-autosuggestions
   zsh-syntax-highlighting
