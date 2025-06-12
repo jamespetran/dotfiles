@@ -1,112 +1,126 @@
 #!/usr/bin/env bash
 #
-# Idempotent, tool-aware installer for a developer environment.
+# Idempotent, tool‑aware installer for a developer environment.
 # Templated by chezmoi using .chezmoidata/packages.yaml
 
 set -euo pipefail
 IFS=$'\n\t'
 
-echo "\U1F680 Starting unified developer environment setup..."
+############################################
+# Minimal UX helpers
+############################################
+# ASCII spinner shown while a long‑running
+# command executes. Usage:
+#     run_with_spinner "Doing stuff" cmd arg1 arg2
+run_with_spinner() {
+  local msg="$1"; shift
+  local pid spin='-\|/'
+  echo -ne "${msg} … "
+  "$@" &>/tmp/spinner.log & pid=$!
+  local i=0
+  while kill -0 "$pid" 2>/dev/null; do
+    printf "\r%s %s" "${msg}" "${spin:i++%${#spin}:1}"
+    sleep 0.15
+  done
+  wait "$pid" && echo -e "\r${msg} … ✅" || {
+    echo -e "\r${msg} … ❌  (details below)"; tail -40 /tmp/spinner.log; exit 1; }
+}
 
-# --- Layer 1: System Foundation (DNF) ---
+echo "🚀  Starting unified developer environment setup…"
+
+############################################
+# Layer 1 – OS packages via dnf
+############################################
 if command -v dnf >/dev/null 2>&1; then
-  echo "→ Installing system foundation packages with DNF..."
-  sudo dnf install -y \
-{{- $last := sub (len .packages.dnf) 1 }}
-{{- range $i, $pkg := .packages.dnf }}
-    {{ $pkg }}{{ if lt $i $last }} \{{ end }}
-{{- end }} || { echo "❌ DNF package install failed"; exit 1; }
+  run_with_spinner "Layer 1: dnf base packages" \
+    sudo dnf install -y \
+      git curl zsh util-linux-user gcc-c++ cmake make pkgconf-pkg-config \
+      python3-pip python3-devel openssl-devel perl perl-libs perl-core \
+      podman libstdc++-devel man-db which findutils hostname iproute \
+      shadow-utils htop strace lsof file tree
 fi
 
-# --- Layer 1.5: User-Space Tools (Homebrew) ---
-echo "→ Installing user-space tools with Homebrew..."
+############################################
+# Layer 1.5 – CLI tools via Homebrew
+############################################
 if ! command -v brew >/dev/null 2>&1; then
-  echo "  → Homebrew not found. Installing..."
-  sudo mkdir -p /home/linuxbrew/.linuxbrew
-  sudo chown -R "$(whoami)" /home/linuxbrew/.linuxbrew
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  run_with_spinner "Install Homebrew" bash -c '
+    sudo mkdir -p /home/linuxbrew/.linuxbrew && \
+    sudo chown -R "$(whoami)" /home/linuxbrew/.linuxbrew && \
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
 fi
-
-# Add brew to the current shell's PATH to use it immediately.
+# shellcheck disable=SC2046
+# shellcheck disable=SC1091
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-brew update
-if brew install --force-bottle --no-build-from-source \
-{{- $last := sub (len .packages.brew) 1 }}
-{{- range $i, $pkg := .packages.brew }}
-  {{ $pkg }}{{ if lt $i $last }} \{{ end }}
-{{- end }}
-; then
-  echo "\U1F37A All Homebrew tools installed from bottles"
-else
-  echo "⚠️ Some bottles missing; falling back to source builds"
-  brew install \
-{{- $last := sub (len .packages.brew) 1 }}
-{{- range $i, $pkg := .packages.brew }}
-    {{ $pkg }}{{ if lt $i $last }} \{{ end }}
-{{- end }}
-fi
+run_with_spinner "brew update" brew update
 
-# --- Layer 2: Language Toolchains (Rust + Node.js) ---
-echo "→ Layer 2: Installing language toolchains..."
+BREW_PKGS=(fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr lazygit gh direnv git-lfs aria2 zellij)
+run_with_spinner "brew install ${#BREW_PKGS[@]} pkgs" brew install --formula --force-bottle  "${BREW_PKGS[@]}" || \
+  run_with_spinner "brew source build fallback" brew install "${BREW_PKGS[@]}"
 
-# Rust
-if command -v dnf >/dev/null 2>&1 && dnf list rust >/dev/null 2>&1; then
-  sudo dnf install -y rust cargo
-else
-  echo "→ Falling back to rustup installer"
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-  source "$HOME/.cargo/env"
-  rustup default stable
-fi
+############################################
+# Layer 2 – Language toolchains
+############################################
+run_with_spinner "Install Rust toolchain" bash -c '
+  if command -v rustc >/dev/null 2>&1; then exit 0; fi
+  if command -v dnf >/dev/null 2>&1 && dnf list rust &>/dev/null; then
+    sudo dnf install -y rust cargo
+  else
+    curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env" && rustup default stable
+  fi'
 
-# Node.js
-if command -v dnf >/dev/null 2>&1 && dnf list nodejs >/dev/null 2>&1; then
-  sudo dnf install -y nodejs
-else
-  export NVM_DIR="$HOME/.nvm"
-  if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-    echo "  → Installing nvm..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-  fi
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-  nvm install --lts
-fi
+run_with_spinner "Install Node (dnf/nvm)" bash -c '
+  if command -v node >/dev/null 2>&1; then exit 0; fi
+  if command -v dnf >/dev/null 2>&1 && dnf list nodejs &>/dev/null; then
+    sudo dnf install -y nodejs
+  else
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] || curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    # shellcheck disable=SC1090
+    . "$NVM_DIR/nvm.sh" && nvm install --lts
+  fi'
 
-# --- Layer 3: Isolated CLI Apps (pipx, cargo) ---
-echo "→ Layer 3: Installing isolated CLI applications..."
-[ -s "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-[ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
-
-if ! command -v pipx >/dev/null 2>&1; then
-  python3 -m pip install --user pipx
-  python3 -m pipx ensurepath
-fi
-
-if command -v dnf >/dev/null 2>&1 && dnf list --quiet pipx >/dev/null 2>&1; then
-  sudo dnf install -y pipx
-else
-  python3 -m pip install --user pipx
-  python3 -m pipx ensurepath
-fi
+############################################
+# Layer 3 – Isolated CLIs (pipx & cargo)
+############################################
+run_with_spinner "pipx bootstrap" bash -c '
+  if ! command -v pipx >/dev/null 2>&1; then
+    python3 -m pip install --user pipx && python3 -m pipx ensurepath
+  fi'
 
 export PATH="$PATH:$HOME/.local/bin"
+run_with_spinner "pipx install poetry & HF Hub" bash -c '
+  pipx install --include-deps poetry || true
+  pipx install --include-deps huggingface_hub || true'
 
-# Python CLIs
-pipx install --include-deps poetry
-pipx install --include-deps huggingface_hub
+# Rust standalone (zellij)
+run_with_spinner "Ensure zellij" bash -c '
+  if command -v zellij >/dev/null 2>&1; then exit 0; fi
+  if command -v dnf >/dev/null 2>&1 && dnf list --quiet zellij &>/dev/null; then
+    sudo dnf install -y zellij
+  elif command -v brew >/dev/null 2>&1; then
+    brew install zellij
+  else
+    cargo install zellij
+  fi'
 
-# Rust CLIs
-if command -v dnf >/dev/null 2>&1 && dnf list --quiet zellij >/dev/null 2>&1; then
-  sudo dnf install -y zellij
-elif command -v brew >/dev/null 2>&1; then
-  brew install zellij
-else
-  cargo install zellij
+############################################
+# Final sanity – make sure /usr/bin/zsh exists *inside the toolbox*
+############################################
+fix_zsh_symlink() {
+  local zsh_path="$1"
+  if [[ -n "$zsh_path" && ! -e /usr/bin/zsh ]]; then
+    sudo ln -sf "$zsh_path" /usr/bin/zsh
+  fi
+}
+
+# If we are *already* in the toolbox just fix it;
+# otherwise, try to jump in and fix it from the host.
+if [[ -f /.toolboxenv || -f /.containerenv ]]; then
+  fix_zsh_symlink "$(command -v zsh || true)"
+elif command -v toolbox &>/dev/null && toolbox list -q | grep -q '^dev$'; then
+  toolbox run dev bash -c 'fix_zsh_symlink "$(command -v zsh || true)"' || true
 fi
 
-# Fix zsh path for toolbox
-if [[ "$(command -v zsh)" != "/usr/bin/zsh" ]]; then
-  sudo ln -sf "$(command -v zsh)" /usr/bin/zsh
-fi
-
-echo "✅ Package setup complete."
+echo "🎉  Environment bootstrap complete."
