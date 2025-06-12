@@ -16,7 +16,8 @@ if command -v dnf >/dev/null 2>&1; then
     gcc-c++ cmake make pkgconf-pkg-config \
     python3-pip python3-devel \
     openssl-devel perl perl-libs perl-core \
-    podman
+    podman libstdc++-devel man-db which findutils hostname \
+    iproute shadow-utils htop strace lsof file tree
 fi
 
 # --- Layer 1.5: User-Space Tools (Homebrew) ---
