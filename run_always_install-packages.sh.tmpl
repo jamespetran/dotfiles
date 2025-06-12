@@ -118,7 +118,8 @@ fix_zsh_symlink() {
 # If we are *already* in the toolbox just fix it;
 # otherwise, try to jump in and fix it from the host.
 if [[ -f /.toolboxenv || -f /.containerenv ]]; then
-  fix_zsh_symlink "$(command -v zsh || true)"
+  run_with_spinner "Ensure /usr/bin/zsh exists" \
+    fix_zsh_symlink "$(command -v zsh || true)"
 elif command -v toolbox &>/dev/null && toolbox list -q | grep -q '^dev$'; then
   toolbox run dev bash -c 'fix_zsh_symlink "$(command -v zsh || true)"' || true
 fi
