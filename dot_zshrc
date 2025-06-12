@@ -23,6 +23,9 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 13
 
+# Silence all console output from the ssh-agent plugin
+zstyle :omz:plugins:ssh-agent quiet yes
+
 # Plugin list
 plugins=(
   git
