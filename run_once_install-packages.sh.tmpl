@@ -15,8 +15,7 @@ if command -v dnf >/dev/null 2>&1; then
 {{- $last := sub (len .packages.dnf) 1 }}
 {{- range $i, $pkg := .packages.dnf }}
     {{ $pkg }}{{ if lt $i $last }} \{{ end }}
-{{- end }}
-  || { echo "❌ DNF package install failed"; exit 1; }
+{{- end }} || { echo "❌ DNF package install failed"; exit 1; }
 fi
 
 # --- Layer 1.5: User-Space Tools (Homebrew) ---
