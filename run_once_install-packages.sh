@@ -82,14 +82,20 @@ if ! command -v pipx >/dev/null 2>&1; then
   python3 -m pipx ensurepath
 fi
 export PATH="$PATH:$HOME/.local/bin"
-# Layer 3a: DNF-packaged Python CLIs first
-if command -v dnf >/dev/null 2>&1; then
-  sudo dnf install -y python3-pipx python3-poetry
+
+# Layer 3a: install pipx the *right* way
+if command -v dnf >/dev/null 2>&1 && dnf list --quiet pipx >/dev/null 2>&1; then
+  sudo dnf install -y pipx        # Fedora package name
 else
   python3 -m pip install --user pipx
   python3 -m pipx ensurepath
 fi
-# Now ensure the rest of your Python tools
+export PATH="$PATH:$HOME/.local/bin"
+
+# Poetry: keep using pipx so we always get the latest version
+pipx install --include-deps poetry
+
+# Other Python CLIs
 pipx install --include-deps huggingface_hub
 
 # Install Rust apps with cargo
