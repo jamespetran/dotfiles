@@ -1,33 +1,47 @@
 packages:
-  darwin:
-    brews:
-      - git
-      - curl
-      - fzf
-      - fd
-      - ripgrep
-      - bat
-      - zoxide
-      - eza
-      - bitwarden-cli
-  linux:
-    apt:
-      - zsh
-      - git
-      - curl
-      - fzf
-      - fd-find
-      - ripgrep
-      - bat
-      - zoxide
-      - util‑linux-user
-    dnf:
-      - zsh
-      - git
-      - curl
-      - fzf
-      - fd-find
-      - ripgrep
-      - bat
-      - zoxide
-      - util‑linux-user
+  dnf:
+    - git
+    - curl
+    - zsh
+    - util-linux-user
+    - gcc-c++
+    - cmake
+    - make
+    - pkgconf-pkg-config
+    - python3-pip
+    - python3-devel
+    - openssl-devel
+    - perl
+    - perl-libs
+    - perl-core
+    - podman
+    - libstdc++-devel
+    - man-db
+    - which
+    - findutils
+    - hostname
+    - iproute
+    - shadow-utils
+    - htop
+    - strace
+    - lsof
+    - file
+    - tree
+  brew:
+    - fzf
+    - fd
+    - ripgrep
+    - bat
+    - zoxide
+    - eza
+    - git-delta
+    - btop
+    - jq
+    - yq
+    - tldr
+    - lazygit
+    - gh
+    - direnv
+    - git-lfs
+    - aria2
+    - zellij

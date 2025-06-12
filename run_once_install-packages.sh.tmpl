@@ -1,27 +1,24 @@
 #!/usr/bin/env bash
 #
 # Idempotent, tool-aware installer for a developer environment.
-# Managed by chezmoi.
+# Templated by chezmoi using .chezmoidata/packages.yaml
 
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
-echo "🚀 Starting unified developer environment setup..."
+echo "\U1F680 Starting unified developer environment setup..."
 
 # --- Layer 1: System Foundation (DNF) ---
-# Use DNF if available to install essential build tools and system dependencies.
 if command -v dnf >/dev/null 2>&1; then
   echo "→ Installing system foundation packages with DNF..."
   sudo dnf install -y \
-    git curl zsh util-linux-user \
-    gcc-c++ cmake make pkgconf-pkg-config \
-    python3-pip python3-devel \
-    openssl-devel perl perl-libs perl-core \
-    podman libstdc++-devel man-db which findutils hostname \
-    iproute shadow-utils htop strace lsof file tree
+{{- range .packages.dnf }}
+    {{ . }} \
+{{- end }}
+  || { echo "❌ DNF package install failed"; exit 1; }
 fi
 
 # --- Layer 1.5: User-Space Tools (Homebrew) ---
-# Use Homebrew for modern CLI tools. Install it if it's not present.
 echo "→ Installing user-space tools with Homebrew..."
 if ! command -v brew >/dev/null 2>&1; then
   echo "  → Homebrew not found. Installing..."
@@ -34,19 +31,23 @@ fi
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 brew update
 if brew install --force-bottle --no-build-from-source \
-     fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr \
-     lazygit gh direnv git-lfs aria2 zellij; then
-  echo "🍺 All tools (incl. zellij) installed from bottles"
+{{- range .packages.brew }}
+  {{ . }} \
+{{- end }}
+; then
+  echo "\U1F37A All Homebrew tools installed from bottles"
 else
-  echo "⚠️  Some bottles missing; falling back to explicit source builds"
-  brew install fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr \
-               lazygit gh direnv git-lfs aria2 zellij
+  echo "⚠️ Some bottles missing; falling back to source builds"
+  brew install \
+{{- range .packages.brew }}
+    {{ . }} \
+{{- end }}
 fi
 
-# --- Layer 2: Language Toolchains (Official Installers) ---
+# --- Layer 2: Language Toolchains (Rust + Node.js) ---
 echo "→ Layer 2: Installing language toolchains..."
 
-# Layer 2a: Try distro Rust first, then rustup fallback
+# Rust
 if command -v dnf >/dev/null 2>&1 && dnf list rust >/dev/null 2>&1; then
   sudo dnf install -y rust cargo
 else
@@ -56,7 +57,7 @@ else
   rustup default stable
 fi
 
-# Layer 2b: Try distro Node.js first, then nvm fallback
+# Node.js
 if command -v dnf >/dev/null 2>&1 && dnf list nodejs >/dev/null 2>&1; then
   sudo dnf install -y nodejs
 else
@@ -65,42 +66,34 @@ else
     echo "  → Installing nvm..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
   fi
-  # shellcheck source=/dev/null
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
   nvm install --lts
 fi
 
-# --- Layer 3: Isolated CLI Applications (pipx & cargo) ---
+# --- Layer 3: Isolated CLI Apps (pipx, cargo) ---
 echo "→ Layer 3: Installing isolated CLI applications..."
-
-# Ensure toolchains are sourced for the current script session
 [ -s "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
 
-# Install Python apps with pipx
 if ! command -v pipx >/dev/null 2>&1; then
   python3 -m pip install --user pipx
   python3 -m pipx ensurepath
 fi
-export PATH="$PATH:$HOME/.local/bin"
 
-# Layer 3a: install pipx the *right* way
 if command -v dnf >/dev/null 2>&1 && dnf list --quiet pipx >/dev/null 2>&1; then
-  sudo dnf install -y pipx        # Fedora package name
+  sudo dnf install -y pipx
 else
   python3 -m pip install --user pipx
   python3 -m pipx ensurepath
 fi
+
 export PATH="$PATH:$HOME/.local/bin"
 
-# Poetry: keep using pipx so we always get the latest version
+# Python CLIs
 pipx install --include-deps poetry
-
-# Other Python CLIs
 pipx install --include-deps huggingface_hub
 
-# Install Rust apps with cargo
+# Rust CLIs
 if command -v dnf >/dev/null 2>&1 && dnf list --quiet zellij >/dev/null 2>&1; then
   sudo dnf install -y zellij
 elif command -v brew >/dev/null 2>&1; then
@@ -109,6 +102,7 @@ else
   cargo install zellij
 fi
 
+# Fix zsh path for toolbox
 if [[ "$(command -v zsh)" != "/usr/bin/zsh" ]]; then
   sudo ln -sf "$(command -v zsh)" /usr/bin/zsh
 fi
