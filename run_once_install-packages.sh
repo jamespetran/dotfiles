@@ -107,6 +107,8 @@ else
   cargo install zellij
 fi
 
-sudo ln -sf "$(command -v zsh)" /usr/bin/zsh
+if [[ "$(command -v zsh)" != "/usr/bin/zsh" ]]; then
+  sudo ln -sf "$(command -v zsh)" /usr/bin/zsh
+fi
 
 echo "✅ Package setup complete."
