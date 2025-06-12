@@ -15,7 +15,8 @@ if command -v dnf >/dev/null 2>&1; then
     git curl zsh util-linux-user \
     gcc-c++ cmake make pkgconf-pkg-config \
     python3-pip python3-devel \
-    openssl-devel perl perl-libs perl-core
+    openssl-devel perl perl-libs perl-core \
+    podman
 fi
 
 # --- Layer 1.5: User-Space Tools (Homebrew) ---
