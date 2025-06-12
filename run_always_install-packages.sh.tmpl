@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Idempotent, tool‑aware installer for a developer environment.
+# Idempotent, tool-aware installer for a developer environment.
 # Templated by chezmoi using .chezmoidata/packages.yaml
 
 set -euo pipefail
@@ -9,7 +9,7 @@ IFS=$'\n\t'
 ############################################
 # Minimal UX helpers
 ############################################
-# ASCII spinner shown while a long‑running
+# ASCII spinner shown while a long-running
 # command executes. Usage:
 #     run_with_spinner "Doing stuff" cmd arg1 arg2
 run_with_spinner() {
@@ -77,7 +77,6 @@ run_with_spinner "Install Node (dnf/nvm)" bash -c '
   else
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] || curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    # shellcheck disable=SC1090
     . "$NVM_DIR/nvm.sh" && nvm install --lts
   fi'
 
@@ -108,20 +107,20 @@ run_with_spinner "Ensure zellij" bash -c '
 ############################################
 # Final sanity – make sure /usr/bin/zsh exists *inside the toolbox*
 ############################################
+# Helper to create the canonical symlink _inside_ the container. We keep it
+# tiny so it can be in-lined easily from another shell.
 fix_zsh_symlink() {
-  local zsh_path="$1"
-  if [[ -n "$zsh_path" && ! -e /usr/bin/zsh ]]; then
-    sudo ln -sf "$zsh_path" /usr/bin/zsh
-  fi
+  local z="$(command -v zsh || true)"
+  [[ -n "$z" && ! -e /usr/bin/zsh ]] && sudo ln -sf "$z" /usr/bin/zsh
 }
 
-# If we are *already* in the toolbox just fix it;
-# otherwise, try to jump in and fix it from the host.
 if [[ -f /.toolboxenv || -f /.containerenv ]]; then
-  run_with_spinner "Ensure /usr/bin/zsh exists" \
-    fix_zsh_symlink "$(command -v zsh || true)"
+  # We’re already *inside* the toolbox
+  fix_zsh_symlink
 elif command -v toolbox &>/dev/null && toolbox list -q | grep -q '^dev$'; then
-  toolbox run dev bash -c 'fix_zsh_symlink "$(command -v zsh || true)"' || true
+  # Jump in just long enough to run the helper
+  export -f fix_zsh_symlink
+  toolbox run -c dev bash -c 'fix_zsh_symlink'
 fi
 
 echo "🎉  Environment bootstrap complete."
