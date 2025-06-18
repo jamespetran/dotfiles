@@ -112,6 +112,18 @@ run_with_spinner "Ensure zellij" bash -c '
   fi'
 
 ############################################
+# Layer 4 – Zsh Plugins
+############################################
+ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+run_with_spinner "Install zsh-autosuggestions" bash -c '
+  if [ -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then exit 0; fi
+  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions'
+
+run_with_spinner "Install zsh-syntax-highlighting" bash -c '
+  if [ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then exit 0; fi
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting'
+
+############################################
 # Final sanity – make sure /usr/bin/zsh exists *inside the toolbox*
 ############################################
 fix_zsh_symlink() {
