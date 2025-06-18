@@ -95,9 +95,10 @@ run_with_spinner "Install Node (dnf/nvm)" bash -c '
 # Note: We use --unattended to prevent the installer from
 # trying to change the default shell or modify our .zshrc,
 # which chezmoi is already managing.
-run_with_spinner "Install Oh My Zsh" bash -c '
-  if [ -d "$HOME/.oh-my-zsh" ]; then exit 0; fi
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+run_with_spinner "Install Oh My Zsh framework" bash -c '
+  # Clone only if the main script is missing, avoiding conflict with chezmoi.
+  if [ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then exit 0; fi
+  git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"'
 
 ############################################
 # Layer 3 – Isolated CLIs (pipx & cargo)
