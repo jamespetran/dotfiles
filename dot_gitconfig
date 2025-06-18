@@ -1,6 +1,6 @@
 [user]
   name = jamespetran
-  email = 74488608+jamespetran@users.noreply.github.com
+  email = {{ (bitwarden "item" "github.com").fields.noreply_email }}
 
 [alias]
   st = status
