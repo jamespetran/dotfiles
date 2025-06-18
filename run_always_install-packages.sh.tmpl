@@ -31,7 +31,7 @@ echo "🚀  Starting unified developer environment setup…"
 sudo -v
 
 ############################################
-# Layer 1 – OS packages via dnf
+# Layer 1 – OS packages via dnf/apt
 ############################################
 if command -v dnf >/dev/null 2>&1; then
   run_with_spinner "Layer 1: dnf base packages" \
@@ -95,6 +95,24 @@ run_with_spinner "Install Oh My Zsh framework" bash -c '
   rsync -a --ignore-existing /tmp/ohmyzsh/ "$HOME/.oh-my-zsh/"
   # Clean up the temporary clone.
   rm -rf /tmp/ohmyzsh'
+
+############################################
+# Layer 2.6 - External CLI Tools
+############################################
+run_with_spinner "Install Bitwarden CLI (bw)" bash -c '
+  if command -v bw >/dev/null 2>&1; then exit 0; fi
+  # Create a temp directory to work in
+  cd /tmp
+  # Download the official zip file
+  curl -fLo bw.zip "https://vault.bitwarden.com/download/?app=cli&platform=linux"
+  # Unzip it
+  unzip -o bw.zip
+  # Make it executable
+  chmod +x ./bw
+  # Move it to a directory in our PATH
+  mv ./bw ~/.local/bin/
+  # Clean up
+  rm -f bw.zip'
 
 
 ############################################
