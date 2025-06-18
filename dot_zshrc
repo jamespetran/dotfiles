@@ -43,6 +43,13 @@ source $ZSH/oh-my-zsh.sh
 # Load custom aliases
 source "$ZSH/custom/aliases.zsh"
 
+# fzf configuration
+# Use fd (faster) for finding files and ripgrep for searching content.
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# Add a preview window for Ctrl+T using bat for syntax highlighting.
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+
 # fzf keybindings
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
