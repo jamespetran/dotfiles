@@ -26,6 +26,31 @@ run_with_spinner() {
     echo -e "\r${msg} … ❌  (details below)"; tail -40 /tmp/spinner.log; exit 1; }
 }
 
+ensure_bitwarden_unlocked() {
+  local status
+  status=$(bw status --raw | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+
+  case "$status" in
+    "unlocked")
+      echo "✅ Bitwarden vault is already unlocked."
+      return 0
+      ;;
+    "unauthenticated")
+      echo "❌ ACTION REQUIRED: Bitwarden is not logged in. Please run 'bw login' in your terminal."
+      exit 1
+      ;;
+    "locked")
+      echo "🔒 Bitwarden vault is locked. Please enter your master password to unlock:"
+      export BW_SESSION_KEY=$(bw unlock --raw)
+      if [ -z "$BW_SESSION_KEY" ]; then
+        echo "❌ Unlock failed. Please try again."
+        exit 1
+      fi
+      echo "✅ Bitwarden vault unlocked for this session."
+      ;;
+  esac
+}
+
 echo "🚀  Starting unified developer environment setup…"
 
 sudo -v
@@ -116,6 +141,7 @@ run_with_spinner "Install Bitwarden CLI (bw)" bash -c '
 ############################################
 # Layer 2.7 - Secrets Pre-flight Check
 ############################################
+ensure_bitwarden_unlocked
 echo "Checking for secrets..."
 # We check for '@' as a simple way to see if a real email is already set.
 if git config user.email | grep -q '@'; then
