@@ -130,13 +130,13 @@ run_with_spinner "Ensure zellij" bash -c '
 # Layer 4 – Zsh Plugins
 ############################################
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
-run_with_spinner "Install zsh-autosuggestions" bash -c '
-  if [ -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then exit 0; fi
-  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions'
+PLUGINS_DIR="$ZSH_CUSTOM/plugins"
 
-run_with_spinner "Install zsh-syntax-highlighting" bash -c '
-  if [ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then exit 0; fi
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting'
+run_with_spinner "Install/Update zsh-autosuggestions" bash -c \
+  "[ -d '$PLUGINS_DIR/zsh-autosuggestions' ] || git clone https://github.com/zsh-users/zsh-autosuggestions.git '$PLUGINS_DIR/zsh-autosuggestions'"
+
+run_with_spinner "Install/Update zsh-syntax-highlighting" bash -c \
+  "[ -d '$PLUGINS_DIR/zsh-syntax-highlighting' ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git '$PLUGINS_DIR/zsh-syntax-highlighting'"
 
 ############################################
 # Final sanity – make sure /usr/bin/zsh exists *inside the toolbox*
