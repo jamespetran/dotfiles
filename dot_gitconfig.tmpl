@@ -1,6 +1,6 @@
 [user]
   name = jamespetran
-  email = {{ (bitwarden "item" "github.com").fields.noreply_email }}
+  email = {{ range (bitwarden "item" "github.com").fields }}{{ if eq .name "noreply_email" }}{{ .value }}{{ end }}{{ end }}
 
 [alias]
   st = status
