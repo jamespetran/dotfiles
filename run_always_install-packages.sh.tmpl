@@ -34,13 +34,12 @@ sudo -v
 # Layer 1 – OS packages via dnf/apt
 ############################################
 if command -v dnf >/dev/null 2>&1; then
-  run_with_spinner "Layer 1: dnf base packages" \
-    sudo dnf install -y {{ .packages.dnf | join " " }}
+  run_with_spinner "Layer 1: dnf base packages" bash -c \
+    "sudo dnf install -y {{ .packages.dnf | join " " }}"
 elif command -v apt-get >/dev/null 2>&1; then
-  run_with_spinner "Layer 1: apt base packages" \
-    sudo apt-get update && sudo apt-get install -y {{ .packages.apt | join " " }}
+  run_with_spinner "Layer 1: apt base packages" bash -c \
+    "sudo apt-get update && sudo apt-get install -y {{ .packages.apt | join " " }}"
 fi
-
 ############################################
 # Layer 1.5 – CLI tools via Homebrew
 ############################################
