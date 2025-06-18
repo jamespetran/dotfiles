@@ -26,31 +26,6 @@ run_with_spinner() {
     echo -e "\r${msg} … ❌  (details below)"; tail -40 /tmp/spinner.log; exit 1; }
 }
 
-ensure_bitwarden_unlocked() {
-  local status
-  status=$(bw status --raw | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
-
-  case "$status" in
-    "unlocked")
-      echo "✅ Bitwarden vault is already unlocked."
-      return 0
-      ;;
-    "unauthenticated")
-      echo "❌ ACTION REQUIRED: Bitwarden is not logged in. Please run 'bw login' in your terminal."
-      exit 1
-      ;;
-    "locked")
-      echo "🔒 Bitwarden vault is locked. Please enter your master password to unlock:"
-      export BW_SESSION_KEY=$(bw unlock --raw)
-      if [ -z "$BW_SESSION_KEY" ]; then
-        echo "❌ Unlock failed. Please try again."
-        exit 1
-      fi
-      echo "✅ Bitwarden vault unlocked for this session."
-      ;;
-  esac
-}
-
 echo "🚀  Starting unified developer environment setup…"
 
 sudo -v
@@ -137,37 +112,6 @@ run_with_spinner "Install Bitwarden CLI (bw)" bash -c '
   mv ./bw ~/.local/bin/
   # Clean up
   rm -f bw.zip'
-
-############################################
-# Layer 2.7 - Secrets Pre-flight Check
-############################################
-ensure_bitwarden_unlocked
-echo "Checking for secrets..."
-# We check for '@' as a simple way to see if a real email is already set.
-if git config user.email | grep -q '@'; then
-  echo "✅ Git email is already configured. Skipping secret checks."
-else
-  # The email isn't set, so we need Bitwarden to be ready.
-  if ! command -v bw >/dev/null; then
-    echo "Could not find Bitwarden CLI. It will be installed now. Please re-run this script after."
-  else
-    BW_STATUS_JSON=$(bw status --raw)
-    if echo "$BW_STATUS_JSON" | grep -q '"status":"unauthenticated"'; then
-      echo "❌ ACTION REQUIRED: Your Git email is not set. Please log in to Bitwarden in another terminal."
-      echo "   1. Run 'bw login'"
-      echo "   2. Export the unlock key as described in the command above"
-      echo "   3. Then re-run this setup"
-      exit 1
-    elif echo "$BW_STATUS_JSON" | grep -q '"status":"locked"'; then
-      echo "❌ ACTION REQUIRED: Your Git email is not set and your Bitwarden vault is locked."
-      echo "   1. Run 'bw unlock'"
-      echo "   2. Export the unlock key as described in the command above"
-      echo "   3. Then re-run this setup"
-      exit 1
-    fi
-    echo "✅ Bitwarden is unlocked. Secrets will be applied."
-  fi
-fi
 
 
 ############################################
