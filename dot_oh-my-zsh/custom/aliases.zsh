@@ -1,3 +1,23 @@
+# A wrapper for chezmoi that ensures the Bitwarden vault is unlocked.
+cz() {
+  # No Bitwarden?  Just run chezmoi.
+  if ! command -v bw >/dev/null 2>&1; then
+    command chezmoi "$@"
+    return
+  fi
+
+  # Quick check: do we already have a usable session?
+  if ! bw --quiet --nointeraction --session "${BW_SESSION:-}" list items --limit 1 2>/dev/null; then
+    echo "🔒 Unlocking Bitwarden vault for this shell…" >&2
+    # --raw gives *just* the key, no banner text.
+    key=$(bw unlock --raw) || { echo "❌ Unlock failed." >&2; return 1; }
+    export BW_SESSION="$key"
+  fi
+
+  # Run chezmoi with a valid session in the env.
+  command chezmoi "$@"
+}
+
 # Modern replacements
 alias ls='eza --icons'
 alias cat='bat'
