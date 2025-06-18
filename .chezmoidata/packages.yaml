@@ -45,3 +45,19 @@ packages:
     - git-lfs
     - aria2
     - zellij
+  apt:
+    - build-essential
+    - git
+    - curl
+    - zsh
+    - cmake
+    - pkg-config
+    - python3-pip
+    - python3-dev
+    - libssl-dev
+    - podman
+    - htop
+    - strace
+    - lsof
+    - file
+    - tree
