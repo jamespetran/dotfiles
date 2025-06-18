@@ -93,6 +93,16 @@ run_with_spinner "Install Node (dnf/nvm)" bash -c '
   fi'
 
 ############################################
+# Layer 2.5 – Shell Frameworks
+############################################
+# Note: We use --unattended to prevent the installer from
+# trying to change the default shell or modify our .zshrc,
+# which chezmoi is already managing.
+run_with_spinner "Install Oh My Zsh" bash -c '
+  if [ -d "$HOME/.oh-my-zsh" ]; then exit 0; fi
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+
+############################################
 # Layer 3 – Isolated CLIs (pipx & cargo)
 ############################################
 run_with_spinner "pipx bootstrap" bash -c '
