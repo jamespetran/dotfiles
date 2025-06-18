@@ -142,6 +142,12 @@ run_with_spinner "Install/Update zsh-syntax-highlighting" bash -c \
   "[ -d '$PLUGINS_DIR/zsh-syntax-highlighting' ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git '$PLUGINS_DIR/zsh-syntax-highlighting'"
 
 ############################################
+# Layer 4.5 – Zsh Theme
+############################################
+run_with_spinner "Install Powerlevel10k theme" bash -c \
+  "[ -d '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k' ] || git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k'"
+
+############################################
 # Final sanity – make sure /usr/bin/zsh exists *inside the toolbox*
 ############################################
 fix_zsh_symlink() {
