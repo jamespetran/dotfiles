@@ -38,6 +38,12 @@ if command -v dnf >/dev/null 2>&1; then
       python3-pip python3-devel openssl-devel perl perl-libs perl-core \
       podman libstdc++-devel man-db which findutils hostname iproute \
       shadow-utils htop strace lsof file tree
+elif command -v apt-get >/dev/null 2>&1; then
+  run_with_spinner "Layer 1: apt base packages" \
+    sudo apt-get update && sudo apt-get install -y \
+      build-essential git curl zsh cmake pkg-config python3-pip \
+      python3-dev libssl-dev podman htop strace lsof file tree
+
 fi
 
 ############################################
