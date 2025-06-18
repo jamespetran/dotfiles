@@ -34,18 +34,11 @@ sudo -v
 # Layer 1 – OS packages via dnf
 ############################################
 if command -v dnf >/dev/null 2>&1; then
-  run_with_spinner "Layer 1: dnf base packages" \
-    sudo dnf install -y \
-      git curl zsh util-linux-user gcc-c++ cmake make pkgconf-pkg-config \
-      python3-pip python3-devel openssl-devel perl perl-libs perl-core \
-      podman libstdc++-devel man-db which findutils hostname iproute \
-      shadow-utils htop strace lsof file tree
+  run_with_spinner "Layer 1: dnf base packages" \
+    sudo dnf install -y {{ .packages.dnf | join " " }}
 elif command -v apt-get >/dev/null 2>&1; then
   run_with_spinner "Layer 1: apt base packages" \
-    sudo apt-get update && sudo apt-get install -y \
-      build-essential git curl zsh cmake pkg-config python3-pip \
-      python3-dev libssl-dev podman htop strace lsof file tree
-
+    sudo apt-get update && sudo apt-get install -y {{ .packages.apt | join " " }}
 fi
 
 ############################################
@@ -62,9 +55,8 @@ fi
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 run_with_spinner "brew update" brew update
 
-BREW_PKGS=(fzf fd ripgrep bat zoxide eza git-delta btop jq yq tldr lazygit gh direnv git-lfs aria2 zellij)
-run_with_spinner "brew install ${#BREW_PKGS[@]} pkgs" brew install --formula --force-bottle  "${BREW_PKGS[@]}" || \
-  run_with_spinner "brew source build fallback" brew install "${BREW_PKGS[@]}"
+run_with_spinner "brew install pkgs" brew install --formula --force-bottle {{ .packages.brew | join " " }} || \
+  run_with_spinner "brew source build fallback" brew install {{ .packages.brew | join " " }}
 
 ############################################
 # Layer 2 – Language toolchains
