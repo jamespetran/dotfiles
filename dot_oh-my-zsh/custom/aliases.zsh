@@ -74,6 +74,7 @@ alias claude="~/.claude/local/claude"
 alias zdev='zellij --layout dev'
 alias zmon='zellij --layout monitoring'
 alias zrust='zellij --layout rust'
+alias zai='zellij --layout ai-dev'
 
 # Power user tool aliases
 alias top='btop'
@@ -82,3 +83,22 @@ alias ps='procs'
 alias sed='sd'
 alias curl='xh'
 alias http='xh'
+
+# Just command runner aliases
+alias j='just'
+alias jd='just dev'
+alias jt='just test'
+alias jb='just build'
+alias jr='just build-release'
+alias jc='just check'
+alias jf='just fmt'
+alias jl='just clippy'
+
+# GitHub CLI aliases
+alias ghd='gh dash'
+alias ghs='gh s'
+alias ghpr='gh pr create --draft'
+alias ghprl='gh pr list'
+alias ghprv='gh pr view'
+alias ghi='gh issue list'
+alias ghr='gh repo view'

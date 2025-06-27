@@ -1,0 +1,127 @@
+// AI Agent Development layout
+// Optimized for AI/ML development workflow
+layout {
+    default_tab_template {
+        children
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+    }
+
+    tab name="Code" focus=true {
+        pane split_direction="vertical" {
+            pane size="65%" {
+                name "Editor"
+                command "nvim"
+                args "."
+            }
+            pane split_direction="horizontal" {
+                pane size="50%" {
+                    name "Terminal"
+                }
+                pane {
+                    name "Just Runner"
+                    command "just"
+                    args "dev"
+                }
+            }
+        }
+    }
+
+    tab name="AI Testing" {
+        pane split_direction="horizontal" {
+            pane size="60%" {
+                name "Agent Interaction"
+            }
+            pane split_direction="vertical" {
+                pane {
+                    name "Model Output"
+                    command "tail"
+                    args "-f" "logs/model.log"
+                }
+                pane {
+                    name "Generation Test"
+                }
+            }
+        }
+    }
+
+    tab name="Training" {
+        pane split_direction="vertical" {
+            pane size="50%" {
+                name "Training Script"
+            }
+            pane split_direction="horizontal" {
+                pane {
+                    name "Training Logs"
+                    command "tail"
+                    args "-f" "logs/training.log"
+                }
+                pane {
+                    name "GPU Monitor"
+                    command "watch"
+                    args "-n1" "nvidia-smi"
+                }
+            }
+        }
+    }
+
+    tab name="Data" {
+        pane split_direction="horizontal" {
+            pane size="60%" {
+                name "Data Processing"
+            }
+            pane split_direction="vertical" {
+                pane {
+                    name "Data Explorer"
+                    command "python"
+                    args "-i"
+                }
+                pane {
+                    name "Storage"
+                    command "watch"
+                    args "df -h"
+                }
+            }
+        }
+    }
+
+    tab name="Monitor" {
+        pane split_direction="horizontal" {
+            pane size="50%" {
+                command "btop"
+            }
+            pane split_direction="vertical" {
+                pane {
+                    name "API Logs"
+                    command "tail"
+                    args "-f" "logs/api.log"
+                }
+                pane {
+                    name "Network"
+                    command "bandwhich"
+                }
+            }
+        }
+    }
+
+    tab name="Git" {
+        pane split_direction="vertical" {
+            pane size="70%" {
+                command "lazygit"
+            }
+            pane split_direction="horizontal" {
+                pane {
+                    name "GitHub CLI"
+                    command "gh"
+                    args "dash"
+                }
+                pane {
+                    name "Status"
+                    command "watch"
+                    args "-n5" "git status --porcelain"
+                }
+            }
+        }
+    }
+}

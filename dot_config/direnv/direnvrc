@@ -1,0 +1,129 @@
+# Global direnv configuration
+# This file contains helper functions for .envrc files
+
+# Layout function for Python projects with virtual environments
+layout_python() {
+    local python=${1:-python3}
+    [[ $# -gt 0 ]] && shift
+    unset PYTHONHOME
+    if [[ -n $VIRTUAL_ENV ]]; then
+        VIRTUAL_ENV=$(realpath "${VIRTUAL_ENV}")
+    else
+        local venv_path="venv"
+        if [[ -d .venv ]]; then
+            venv_path=".venv"
+        fi
+        VIRTUAL_ENV="$(realpath ${venv_path})"
+    fi
+    export VIRTUAL_ENV
+    if [[ ! -d $VIRTUAL_ENV ]]; then
+        log_status "Creating virtual environment at $VIRTUAL_ENV"
+        $python -m venv "$VIRTUAL_ENV"
+    fi
+    PATH_add "$VIRTUAL_ENV/bin"
+    export PYTHONPATH="."
+}
+
+# Layout function for Rust projects
+layout_rust() {
+    # Set Rust-specific environment variables
+    export RUST_BACKTRACE=1
+    export CARGO_INCREMENTAL=1
+    
+    # Add project-specific cargo bin to PATH
+    if [[ -f Cargo.toml ]]; then
+        PATH_add "./target/debug"
+        PATH_add "./target/release"
+    fi
+}
+
+# Layout function for AI/ML projects
+layout_ai() {
+    # Python virtual environment for AI dependencies
+    layout_python python3
+    
+    # Common AI/ML environment variables
+    export PYTHONPATH="."
+    export TOKENIZERS_PARALLELISM=false  # Avoid huggingface warnings
+    
+    # CUDA settings (if available)
+    if command -v nvcc >/dev/null 2>&1; then
+        export CUDA_VISIBLE_DEVICES="0"
+    fi
+    
+    # Model caching
+    export HF_HOME="${PWD}/.cache/huggingface"
+    export TRANSFORMERS_CACHE="${PWD}/.cache/transformers"
+}
+
+# Layout function for Node.js projects
+layout_node() {
+    local node_version=${1:-lts}
+    if has mise; then
+        use mise node@${node_version}
+    fi
+    PATH_add "./node_modules/.bin"
+}
+
+# Function to load environment variables from a .env file
+dotenv() {
+    local env_file=${1:-.env}
+    if [[ -f $env_file ]]; then
+        set -a
+        source "$env_file"
+        set +a
+    fi
+}
+
+# Function to load secrets from a .secrets file (gitignored)
+load_secrets() {
+    local secrets_file=${1:-.secrets}
+    if [[ -f $secrets_file ]]; then
+        log_status "Loading secrets from $secrets_file"
+        set -a
+        source "$secrets_file"
+        set +a
+    fi
+}
+
+# Function for development vs production environments
+env_mode() {
+    local mode=${1:-development}
+    export NODE_ENV="$mode"
+    export RUST_LOG="${RUST_LOG:-info}"
+    
+    case "$mode" in
+        development|dev)
+            export DEBUG=1
+            export RUST_LOG="debug"
+            ;;
+        production|prod)
+            unset DEBUG
+            export RUST_LOG="warn"
+            ;;
+        test)
+            export RUST_LOG="error"
+            ;;
+    esac
+}
+
+# Helper for API keys and tokens
+setup_api_keys() {
+    # Load from various possible locations
+    load_secrets .env.local
+    load_secrets .env.secrets
+    load_secrets ~/.config/ai-keys  # Global AI API keys
+}
+
+# Database configuration helper
+setup_database() {
+    local db_type=${1:-postgres}
+    case "$db_type" in
+        postgres)
+            export DATABASE_URL="${DATABASE_URL:-postgresql://localhost:5432/$(basename $PWD)_dev}"
+            ;;
+        sqlite)
+            export DATABASE_URL="${DATABASE_URL:-sqlite://$(pwd)/dev.db}"
+            ;;
+    esac
+}

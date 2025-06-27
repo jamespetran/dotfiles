@@ -1,0 +1,40 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "🔧 Setting up mise (universal runtime manager)..."
+
+# Check if mise is installed
+if ! command -v mise >/dev/null 2>&1; then
+  echo "⚠️  mise not found. Install with: brew install mise"
+  exit 1
+fi
+
+# Check if mise is already activated in shell
+if mise --version >/dev/null 2>&1; then
+  echo "✅ mise already available. Configuring..."
+else
+  echo "📝 Setting up mise shell integration..."
+fi
+
+# Install configured runtimes if they don't exist
+echo "🐍 Installing Python 3.11 for AI/ML development..."
+if ! mise list python | grep -q "3.11"; then
+  mise install python@3.11
+fi
+
+echo "📦 Installing Node.js LTS..."
+if ! mise list node | grep -q "lts"; then
+  mise install node@lts
+fi
+
+# Set as global defaults
+mise use --global python@3.11
+mise use --global node@lts
+
+# Install useful Python packages globally
+echo "🛠️  Installing global Python tools..."
+~/.local/share/mise/installs/python/3.11/bin/pip install --user pipx
+
+echo "✅ mise setup complete!"
+echo "💡 Available runtimes:"
+mise list
