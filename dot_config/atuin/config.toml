@@ -9,8 +9,8 @@
 ## where to store your auth session token, default is your system data directory  
 # session_path = "~/.session"
 
-## date format used, either "us" or "iso"
-dialect = "iso"
+## date format used, either "us" or "iso" 
+# dialect = "iso"
 
 ## enable or disable automatic sync
 auto_sync = true

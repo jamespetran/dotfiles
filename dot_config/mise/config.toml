@@ -11,8 +11,8 @@ shorthands_file = "~/.config/mise/shorthands.toml"
 # Verbose output for debugging
 verbose = false
 
-# Disable analytics
-disable_telemetry = true
+# Disable analytics (moved to correct section)
+experimental = true
 
 # Plugin repositories
 plugin_autoupdate_last_check_duration = "7d"
