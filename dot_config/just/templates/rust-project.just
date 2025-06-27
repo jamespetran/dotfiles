@@ -15,15 +15,21 @@ build:
 build-release:
     cargo build --release
 
-# Testing
+# Testing (Rust-grade performance)
 test:
-    cargo test
+    cargo nextest run
 
 test-verbose:
-    cargo test -- --nocapture
+    cargo nextest run --nocapture
 
 test-watch:
-    cargo watch -x "test"
+    cargo watch -x "nextest run"
+
+test-cargo:
+    cargo test
+
+test-coverage:
+    cargo nextest run --coverage --lcov --output-path lcov.info
 
 bench:
     cargo bench

@@ -1,0 +1,194 @@
+{
+    // Broot configuration - Zero-config intelligent file traversal
+    
+    // Default flags applied to all instances
+    default_flags: "h"  // Show hidden files by default
+    
+    // Color scheme optimized for development
+    skin: {
+        default: "gray(20) none"
+        tree: "ansi(94) None"
+        parent: "ansi(32) None Bold"
+        file: "gray(20) None"
+        directory: "ansi(33) None Bold"
+        exe: "ansi(32) None Bold" 
+        link: "Magenta None"
+        pruning: "gray(12) None Italic"
+        perm__: "gray(5) None"
+        perm_r: "ansi(94) None"
+        perm_w: "ansi(132) None"
+        perm_x: "ansi(65) None"
+        owner: "ansi(138) None"
+        group: "ansi(131) None"
+        count: "ansi(136) gray(3)"
+        dates: "ansi(66) None"
+        sparse: "ansi(214) None"
+        content_extract: "ansi(29) None"
+        content_match: "ansi(34) None"
+        git_branch: "ansi(229) None"
+        git_insertions: "ansi(28) None"
+        git_deletions: "ansi(160) None"
+        git_status_current: "gray(5) None"
+        git_status_modified: "ansi(28) None"
+        git_status_new: "ansi(94) None Bold"
+        git_status_ignored: "gray(17) None"
+        git_status_conflicted: "ansi(88) None"
+        git_status_other: "ansi(88) None"
+        selected_line: "None gray(5)"
+        char_match: "ansi(22) None"
+        file_error: "Red None"
+        flag_label: "gray(15) None"
+        flag_value: "ansi(208) None Bold"
+        input: "White None"
+        status_error: "gray(22) ansi(124)"
+        status_job: "ansi(220) gray(5)"
+        status_normal: "gray(20) gray(3)"
+        status_italic: "ansi(208) gray(3)"
+        status_bold: "ansi(208) gray(3) Bold"
+        status_code: "ansi(229) gray(3)"
+        status_ellipsis: "gray(19) gray(1)"
+        purpose_normal: "gray(20) gray(2)"
+        purpose_italic: "ansi(178) gray(2)"
+        purpose_bold: "ansi(178) gray(2) Bold"
+        purpose_ellipsis: "gray(20) gray(2)"
+        scrollbar_track: "gray(7) None"
+        scrollbar_thumb: "gray(22) None"
+        help_paragraph: "gray(20) None"
+        help_bold: "ansi(208) None Bold"
+        help_italic: "ansi(166) None"
+        help_code: "gray(21) gray(3)"
+        help_headers: "ansi(208) None"
+        help_table_border: "ansi(239) None"
+        preview_title: "gray(23) None"
+        preview_separator: "gray(20) None"
+        preview_match: "None ansi(29)"
+        hex_null: "gray(11) None"
+        hex_ascii_graphic: "gray(18) None"
+        hex_ascii_whitespace: "ansi(143) None"
+        hex_ascii_other: "ansi(215) None"
+        hex_non_ascii: "ansi(167) None"
+    }
+    
+    // Verbs (shortcuts) optimized for development workflows
+    verbs: [
+        // Quick navigation
+        {
+            invocation: "edit"
+            shortcut: "e"
+            execution: "$EDITOR +{line} {file}"
+            apply_to: "file"
+        }
+        {
+            invocation: "code"
+            shortcut: "c"
+            execution: "code {file}"
+            apply_to: "file"
+        }
+        {
+            invocation: "view"
+            shortcut: "v"
+            execution: "bat {file}"
+            apply_to: "file"
+        }
+        
+        // Dataset analysis
+        {
+            invocation: "analyze"
+            shortcut: "a"
+            execution: "dv {file}"
+            apply_to: "file"
+        }
+        {
+            invocation: "stats"
+            shortcut: "s"
+            execution: "dstats {directory}"
+            apply_to: "directory"
+        }
+        
+        // Git operations
+        {
+            invocation: "git_diff"
+            shortcut: "gd"
+            execution: "git diff {file}"
+            apply_to: "file"
+        }
+        {
+            invocation: "git_log"
+            shortcut: "gl"
+            execution: "git log --follow -p {file}"
+            apply_to: "file"
+        }
+        
+        // File operations
+        {
+            invocation: "copy_path"
+            shortcut: "yy"
+            execution: "echo {file} | pbcopy"
+            apply_to: "file"
+        }
+        {
+            invocation: "terminal"
+            shortcut: "t"
+            execution: "$SHELL"
+            from_shell: true
+            leave_broot: false
+        }
+        
+        // Search and analysis
+        {
+            invocation: "rg"
+            execution: "rg {pattern} {directory}"
+            apply_to: "directory"
+        }
+        {
+            invocation: "fd"
+            execution: "fd {pattern} {directory}"
+            apply_to: "directory"
+        }
+    ]
+    
+    // File extension colors for development
+    ext_colors: {
+        rs: "ansi(208)"
+        py: "ansi(33)"
+        js: "ansi(215)"
+        ts: "ansi(32)"
+        json: "ansi(179)"
+        toml: "ansi(173)"
+        yaml: "ansi(173)"
+        yml: "ansi(173)"
+        md: "ansi(111)"
+        txt: "gray(20)"
+        log: "gray(15)"
+        csv: "ansi(72)"
+        parquet: "ansi(35)"
+        model: "ansi(129)"
+        pkl: "ansi(129)"
+        bin: "ansi(124)"
+        exe: "ansi(124)"
+        so: "ansi(124)"
+        dll: "ansi(124)"
+        lock: "gray(12)"
+        cache: "gray(10)"
+    }
+    
+    // Special patterns for hiding unimportant files
+    special_paths: {
+        "target": { "style": "gray(8)", "show": "only_dirs" }
+        "node_modules": { "style": "gray(8)", "show": "only_dirs" }
+        ".git": { "style": "gray(8)", "show": "only_dirs" }
+        "__pycache__": { "style": "gray(8)", "show": "never" }
+        "*.pyc": { "style": "gray(8)", "show": "never" }
+        ".DS_Store": { "style": "gray(8)", "show": "never" }
+        "Thumbs.db": { "style": "gray(8)", "show": "never" }
+        ".cache": { "style": "gray(8)", "show": "only_dirs" }
+        ".cargo": { "style": "gray(8)", "show": "only_dirs" }
+    }
+    
+    // Search modes for different use cases
+    search_modes: {
+        "name": "fuzzy_name"
+        "content": "fuzzy_content"
+        "regex": "regex_name"
+    }
+}

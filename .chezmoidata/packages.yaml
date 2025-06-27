@@ -59,6 +59,15 @@ packages:
     - broot
     - just
     - mise
+    # Phase 3: Rust-grade performance tools
+    - sccache
+    - cargo-nextest
+    - cargo-watch
+    - cargo-expand
+    - cargo-edit
+    - cargo-outdated
+    - cargo-audit
+    - cargo-bloat
   apt:
     - build-essential
     - git

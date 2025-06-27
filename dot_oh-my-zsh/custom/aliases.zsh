@@ -1,10 +1,14 @@
 # Simple chezmoi alias - scripts handle their own Bitwarden authentication
 alias cz='chezmoi'
 
-# Modern replacements
+# Modern replacements (keeping originals available)
 alias ls='eza --icons'
-alias cat='bat'
+alias ll='eza -la --icons'
 alias find='fd'
+
+# bat as alternative to cat, not replacement
+alias bcat='bat'
+alias view='bat'
 
 # Git
 alias g='git'
@@ -25,13 +29,18 @@ alias glgg='git lg'          # enhanced log
 alias gdiff='git diff --word-diff=color'
 alias gshow='git show --word-diff=color'
 
-# Rust
+# Rust (Performance-focused)
 alias cb='cargo build'
 alias cr='cargo run'
-alias ct='cargo test'
+alias ct='cargo nextest run'  # Blazing fast tests
+alias ctc='cargo test'        # Traditional cargo test if needed
 alias cl='cargo clippy'
 alias cf='cargo fmt'
 alias cw='cargo watch -x check'
+alias cn='cargo nextest run'  # Explicit nextest
+alias cnw='cargo watch -x "nextest run"'  # Watch with nextest
+alias cstats='sccache --show-stats'  # Cache statistics
+alias csize='cargo bloat --release --crates'  # Binary size analysis
 
 # zoxide (better cd)
 eval "$(zoxide init zsh)"
@@ -102,3 +111,14 @@ alias ghprl='gh pr list'
 alias ghprv='gh pr view'
 alias ghi='gh issue list'
 alias ghr='gh repo view'
+
+# File navigation and analysis
+alias explore='broot'  # Interactive file exploration
+alias nav='broot'      # Interactive navigation
+alias br='broot'       # Short broot alias
+
+# Dataset analysis shortcuts
+alias analyze='dv'
+alias datastat='dstats'
+alias datafind='dfind'
+alias datacheck='dcheck'

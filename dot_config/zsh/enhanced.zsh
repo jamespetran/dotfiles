@@ -139,3 +139,22 @@ fkill() {
         echo "$pids" | xargs kill -"${1:-9}"
     fi
 }
+
+# Rust performance optimizations
+export RUSTC_WRAPPER="sccache"
+export SCCACHE_DIR="$HOME/.cache/sccache"
+export CARGO_INCREMENTAL=1
+export RUST_BACKTRACE=1
+
+# Build parallelization (use all cores)
+export MAKEFLAGS="-j$(nproc)"
+export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+
+# Faster linking
+export RUSTFLAGS="-C link-arg=-fuse-ld=lld"
+
+# Load dataset analysis tools
+[[ -f ~/.config/zsh/dataset-tools.zsh ]] && source ~/.config/zsh/dataset-tools.zsh
+
+# Load notification system
+[[ -f ~/.config/zsh/notifications.zsh ]] && source ~/.config/zsh/notifications.zsh
