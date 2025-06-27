@@ -34,7 +34,7 @@ if command -v brew >/dev/null 2>&1; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
   
   run_with_spinner "brew update" brew update
-  run_with_spinner "brew upgrade packages" brew upgrade --formula --force-bottle {{ .packages.brew | join " " }} || true
+  run_with_spinner "brew install/upgrade packages" brew install --formula --force-bottle {{ .packages.brew | join " " }} || true
 fi
 
 ############################################
