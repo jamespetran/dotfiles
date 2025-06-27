@@ -16,6 +16,15 @@ alias gco='git checkout'
 alias glg='git log --oneline --decorate --graph --all'
 alias gcl='git clone'
 
+# Advanced git aliases
+alias gsl='git sl'           # git-branchless smartlog
+alias gabs='git absorb'      # git-absorb
+alias gundo='git undo'       # git-branchless undo
+alias gsync='git sync'       # git-branchless sync
+alias glgg='git lg'          # enhanced log
+alias gdiff='git diff --word-diff=color'
+alias gshow='git show --word-diff=color'
+
 # Rust
 alias cb='cargo build'
 alias cr='cargo run'
@@ -60,3 +69,16 @@ alias cls='clear && printf "\e[3J"'
 
 # Claude Code CLI
 alias claude="~/.claude/local/claude"
+
+# Zellij layouts
+alias zdev='zellij --layout dev'
+alias zmon='zellij --layout monitoring'
+alias zrust='zellij --layout rust'
+
+# Power user tool aliases
+alias top='btop'
+alias du='dust'
+alias ps='procs'
+alias sed='sd'
+alias curl='xh'
+alias http='xh'

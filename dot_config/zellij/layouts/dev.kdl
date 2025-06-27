@@ -1,0 +1,66 @@
+// Development layout with editor, terminal, and monitoring
+layout {
+    default_tab_template {
+        children
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+    }
+
+    tab name="Editor" focus=true {
+        pane split_direction="vertical" {
+            pane size="70%" {
+                command "nvim"
+                args "."
+            }
+            pane split_direction="horizontal" {
+                pane size="60%" {
+                    name "Terminal"
+                }
+                pane {
+                    name "Git"
+                    command "lazygit"
+                }
+            }
+        }
+    }
+
+    tab name="Server" {
+        pane split_direction="horizontal" {
+            pane size="70%" {
+                name "Server"
+            }
+            pane split_direction="vertical" {
+                pane {
+                    name "Logs"
+                    command "tail"
+                    args "-f" "/var/log/syslog"
+                }
+                pane {
+                    name "Monitor"
+                    command "btop"
+                }
+            }
+        }
+    }
+
+    tab name="Docker" {
+        pane split_direction="vertical" {
+            pane size="60%" {
+                name "Docker"
+            }
+            pane split_direction="horizontal" {
+                pane {
+                    name "Containers"
+                    command "watch"
+                    args "docker ps"
+                }
+                pane {
+                    name "Images"
+                    command "watch"
+                    args "docker images"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,71 @@
+// System monitoring layout
+layout {
+    default_tab_template {
+        children
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+    }
+
+    tab name="System" focus=true {
+        pane split_direction="horizontal" {
+            pane size="50%" {
+                command "btop"
+            }
+            pane split_direction="vertical" {
+                pane {
+                    name "Network"
+                    command "bandwhich"
+                }
+                pane {
+                    name "Disk"
+                    command "watch"
+                    args "df -h"
+                }
+            }
+        }
+    }
+
+    tab name="Processes" {
+        pane split_direction="horizontal" {
+            pane size="60%" {
+                command "procs"
+                args "--tree"
+            }
+            pane split_direction="vertical" {
+                pane {
+                    name "Memory"
+                    command "watch"
+                    args "free -h"
+                }
+                pane {
+                    name "Load"
+                    command "watch"
+                    args "uptime"
+                }
+            }
+        }
+    }
+
+    tab name="Logs" {
+        pane split_direction="vertical" {
+            pane {
+                name "System Logs"
+                command "journalctl"
+                args "-f"
+            }
+            pane split_direction="horizontal" {
+                pane {
+                    name "Auth Logs"
+                    command "tail"
+                    args "-f" "/var/log/auth.log"
+                }
+                pane {
+                    name "Kernel"
+                    command "dmesg"
+                    args "-w"
+                }
+            }
+        }
+    }
+}

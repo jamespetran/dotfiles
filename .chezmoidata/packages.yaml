@@ -45,6 +45,20 @@ packages:
     - git-lfs
     - aria2
     - zellij
+    # Power user tools - Phase 1
+    - atuin
+    - git-absorb
+    - git-branchless
+    - bottom
+    - dust
+    - procs
+    - sd
+    - xh
+    - hyperfine
+    - tokei
+    - broot
+    - just
+    - mise
   apt:
     - build-essential
     - git
