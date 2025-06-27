@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#
+# Keep development packages up to date.
+# Runs on every `cz apply` to maintain fresh packages.
+
+set -euo pipefail
+IFS=$'\n\t'
+
+############################################
+# Minimal UX helpers
+############################################
+run_with_spinner() {
+  local msg="$1"; shift
+  local pid spin='-\|/'
+  echo -ne "${msg} … "
+  "$@" &>/tmp/spinner.log & pid=$!
+  local i=0
+  while kill -0 "$pid" 2>/dev/null; do
+    printf "\r%s %s" "${msg}" "${spin:i++%${#spin}:1}"
+    sleep 0.15
+  done
+  wait "$pid" && echo -e "\r${msg} … ✅" || {
+    echo -e "\r${msg} … ❌  (details below)"; tail -40 /tmp/spinner.log; exit 1; }
+}
+
+echo "🔄  Updating development packages…"
+
+############################################
+# Update Homebrew packages
+############################################
+if command -v brew >/dev/null 2>&1; then
+  # shellcheck disable=SC2046
+  # shellcheck disable=SC1091
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  
+  run_with_spinner "brew update" brew update
+  run_with_spinner "brew upgrade packages" brew upgrade --formula --force-bottle {{ .packages.brew | join " " }} || true
+fi
+
+############################################
+# Update Zsh plugins (git pull)
+############################################
+ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+PLUGINS_DIR="$ZSH_CUSTOM/plugins"
+
+if [ -d "$PLUGINS_DIR/zsh-autosuggestions" ]; then
+  run_with_spinner "Update zsh-autosuggestions" bash -c \
+    "cd '$PLUGINS_DIR/zsh-autosuggestions' && git pull --quiet"
+fi
+
+if [ -d "$PLUGINS_DIR/zsh-syntax-highlighting" ]; then
+  run_with_spinner "Update zsh-syntax-highlighting" bash -c \
+    "cd '$PLUGINS_DIR/zsh-syntax-highlighting' && git pull --quiet"
+fi
+
+# Update Powerlevel10k theme
+THEME_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+if [ -d "$THEME_DIR" ]; then
+  run_with_spinner "Update Powerlevel10k theme" bash -c \
+    "cd '$THEME_DIR' && git pull --quiet"
+fi
+
+echo "✅  Package updates complete."

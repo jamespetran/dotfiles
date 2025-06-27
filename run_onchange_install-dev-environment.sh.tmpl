@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Idempotent, tool‑aware installer for a developer environment.
+# One-time developer environment setup.
+# Installs core development tools and frameworks.
 # Templated by chezmoi using .chezmoidata/packages.yaml
 
 set -euo pipefail
@@ -26,7 +27,7 @@ run_with_spinner() {
     echo -e "\r${msg} … ❌  (details below)"; tail -40 /tmp/spinner.log; exit 1; }
 }
 
-echo "🚀  Starting unified developer environment setup…"
+echo "🚀  Setting up developer environment (one-time setup)…"
 
 sudo -v
 
@@ -40,6 +41,7 @@ elif command -v apt-get >/dev/null 2>&1; then
   run_with_spinner "Layer 1: apt base packages" bash -c \
     "sudo apt-get update && sudo apt-get install -y {{ .packages.apt | join " " }}"
 fi
+
 ############################################
 # Layer 1.5 – CLI tools via Homebrew
 ############################################
@@ -49,12 +51,13 @@ if ! command -v brew >/dev/null 2>&1; then
     sudo chown -R "$(whoami)" /home/linuxbrew/.linuxbrew && \
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
 fi
+
 # shellcheck disable=SC2046
 # shellcheck disable=SC1091
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-run_with_spinner "brew update" brew update
 
-run_with_spinner "brew install pkgs" brew install --formula --force-bottle {{ .packages.brew | join " " }} || \
+# Initial brew package installation
+run_with_spinner "brew install core packages" brew install --formula --force-bottle {{ .packages.brew | join " " }} || \
   run_with_spinner "brew source build fallback" brew install {{ .packages.brew | join " " }}
 
 ############################################
@@ -113,7 +116,6 @@ run_with_spinner "Install Bitwarden CLI (bw)" bash -c '
   # Clean up
   rm -f bw.zip'
 
-
 ############################################
 # Layer 3 – Isolated CLIs (pipx & cargo)
 ############################################
@@ -144,10 +146,10 @@ run_with_spinner "Ensure zellij" bash -c '
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 PLUGINS_DIR="$ZSH_CUSTOM/plugins"
 
-run_with_spinner "Install/Update zsh-autosuggestions" bash -c \
+run_with_spinner "Install zsh-autosuggestions" bash -c \
   "[ -d '$PLUGINS_DIR/zsh-autosuggestions' ] || git clone https://github.com/zsh-users/zsh-autosuggestions.git '$PLUGINS_DIR/zsh-autosuggestions'"
 
-run_with_spinner "Install/Update zsh-syntax-highlighting" bash -c \
+run_with_spinner "Install zsh-syntax-highlighting" bash -c \
   "[ -d '$PLUGINS_DIR/zsh-syntax-highlighting' ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git '$PLUGINS_DIR/zsh-syntax-highlighting'"
 
 ############################################
@@ -175,4 +177,4 @@ elif command -v toolbox &>/dev/null && toolbox list -q | grep -q '^dev$'; then
   toolbox run dev bash -c 'fix_zsh_symlink "$(command -v zsh || true)"' || true
 fi
 
-echo "🎉  Environment bootstrap complete."
+echo "🎉  Developer environment setup complete."
