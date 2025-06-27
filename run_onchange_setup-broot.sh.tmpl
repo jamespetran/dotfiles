@@ -12,6 +12,7 @@ fi
 # Initialize broot if not already done
 if [[ ! -f ~/.config/broot/launcher/bash/br ]]; then
   echo "🚀 Initializing broot..."
+  mkdir -p ~/.config/broot/launcher/{bash,zsh}
   broot --print-shell-function bash > ~/.config/broot/launcher/bash/br
   broot --print-shell-function zsh > ~/.config/broot/launcher/zsh/br
 fi
@@ -23,7 +24,7 @@ echo "   tree         - Same as br (alias)"
 echo "   explore      - Same as br (alias)"
 echo ""
 echo "🔥 Power features:"
-echo "   :e <file>    - Edit file in $EDITOR"
+echo "   :e <file>    - Edit file in \${EDITOR:-nvim}"
 echo "   :v <file>    - View file with bat"
 echo "   :a <file>    - Analyze dataset"
 echo "   :s <dir>     - Show directory stats"

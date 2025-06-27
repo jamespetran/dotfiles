@@ -96,9 +96,19 @@ EOF
 # Configure environment variables for performance
 echo "🔧 Setting up environment optimizations..."
 
-# Add to shell configuration
-echo 'export RUSTC_WRAPPER=sccache' >> ~/.bashrc || true
-echo 'export SCCACHE_DIR="$HOME/.cache/sccache"' >> ~/.bashrc || true
+# Add to shell configuration (zsh is the target shell)
+if [[ -f ~/.zshrc ]]; then
+  if ! grep -q "RUSTC_WRAPPER=sccache" ~/.zshrc; then
+    echo 'export RUSTC_WRAPPER=sccache' >> ~/.zshrc
+    echo "  ✓ Added RUSTC_WRAPPER to ~/.zshrc"
+  fi
+  if ! grep -q "SCCACHE_DIR=" ~/.zshrc; then
+    echo 'export SCCACHE_DIR="$HOME/.cache/sccache"' >> ~/.zshrc
+    echo "  ✓ Added SCCACHE_DIR to ~/.zshrc"
+  fi
+else
+  echo "  ⚠️ ~/.zshrc not found, skipping environment exports"
+fi
 
 echo "✅ Rust toolchain optimization complete!"
 echo ""

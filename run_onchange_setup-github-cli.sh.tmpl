@@ -13,7 +13,7 @@ fi
 echo "📦 Installing GitHub CLI extensions..."
 
 # Extension for creating releases
-if ! gh extension list | grep -q "gh-release"; then
+if ! gh extension list | grep -q "github/gh-release"; then
   echo "Installing gh-release extension..."
   gh extension install github/gh-release || true
 fi

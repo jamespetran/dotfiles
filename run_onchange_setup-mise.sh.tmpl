@@ -18,12 +18,12 @@ fi
 
 # Install configured runtimes if they don't exist
 echo "🐍 Installing Python 3.11 for AI/ML development..."
-if ! mise list python | grep -q "3.11"; then
+if mise list python | grep -q "(missing)"; then
   mise install python@3.11
 fi
 
 echo "📦 Installing Node.js LTS..."
-if ! mise list node | grep -q "lts"; then
+if mise list node | grep -q "(missing)"; then
   mise install node@lts
 fi
 
