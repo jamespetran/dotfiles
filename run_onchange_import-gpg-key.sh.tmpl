@@ -13,7 +13,7 @@ fi
 
 echo "Importing GPG private key from Bitwarden..."
 # Fetch the secure note from Bitwarden and import it
-printf "%s" "{{ (bitwarden "item" "GPG Private Key").notes }}" | gpg --import
+bw get notes "GPG Private Key" | gpg --import
 
 echo "Trusting the newly imported GPG key..."
 # This command tells gpg to ultimately trust your key so you don't get prompted
