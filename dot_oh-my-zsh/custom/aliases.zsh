@@ -74,3 +74,6 @@ alias ports='ss -tulpn'
 alias grep='grep --color=auto'
 
 alias cls='clear && printf "\e[3J"'
+
+# Claude Code CLI
+alias claude="~/.claude/local/claude"
