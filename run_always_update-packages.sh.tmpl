@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 #
-# Keep development packages up to date.
-# Runs on every `cz apply` to maintain fresh packages.
+# Install/ensure packages are present (minimal base system).
+# Does NOT automatically upgrade - use run_weekly_safe-upgrades.sh for that.
+# Runs on every `cz apply` to ensure minimal tools are installed.
 
 set -euo pipefail
+
+# Choose package set based on install mode
+{{- if eq .installMode "full" }}
+PACKAGE_FILE="packages.yaml"
+{{- else }}
+PACKAGE_FILE="packages-minimal.yaml"
+{{- end }}
 IFS=$'\n\t'
 
 ############################################
@@ -23,7 +31,7 @@ run_with_spinner() {
     echo -e "\r${msg} … ❌  (details below)"; tail -40 /tmp/spinner.log; exit 1; }
 }
 
-echo "🔄  Updating development packages…"
+echo "🔄  Ensuring minimal packages are installed…"
 
 ############################################
 # Update Homebrew packages
@@ -34,7 +42,11 @@ if command -v brew >/dev/null 2>&1; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
   
   run_with_spinner "brew update" brew update
+  {{- if eq .installMode "full" }}
   run_with_spinner "brew install/upgrade packages" brew install --formula --force-bottle {{ .packages.brew | join " " }} || true
+  {{- else }}
+  run_with_spinner "brew install packages (minimal)" brew install --formula {{ index (includeTemplate "packages-minimal.yaml" | fromYaml) "packages" "brew" | join " " }} || true
+  {{- end }}
 fi
 
 ############################################
