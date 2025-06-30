@@ -4,7 +4,7 @@ alias cz='chezmoi'
 # Modern replacements (keeping originals available)
 alias ls='eza --icons'
 alias ll='eza -la --icons'
-alias find='fd'
+# alias find='fd'
 
 # bat as alternative to cat, not replacement
 alias bcat='bat'
