@@ -1,0 +1,62 @@
+# Minimal package set for base dotfiles
+# Focus on shell environment and essential tools only
+# Language runtimes go in dev containers
+
+packages:
+  dnf:
+    # Core system utilities
+    - git
+    - curl
+    - zsh
+    - util-linux-user
+    - which
+    - findutils
+    - hostname
+    - iproute
+    - shadow-utils
+    - man-db
+    # Container runtime
+    - podman
+    # Basic debugging
+    - htop
+    - strace
+    - lsof
+    - file
+    - tree
+  brew:
+    # Essential shell tools
+    - fzf
+    - fd
+    - ripgrep
+    - bat
+    - zoxide
+    - eza
+    # Git enhancements
+    - git-delta
+    - lazygit
+    - gh
+    # Terminal multiplexer
+    - zellij
+    # Process monitoring
+    - btop
+    # Data processing
+    - jq
+    - yq
+    # Quick help
+    - tldr
+    # Shell history
+    - atuin
+    # File navigation
+    - broot
+  apt:
+    # Core system utilities
+    - git
+    - curl
+    - zsh
+    - podman
+    # Basic debugging
+    - htop
+    - strace
+    - lsof
+    - file
+    - tree
