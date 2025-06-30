@@ -4,7 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a chezmoi dotfiles repository that manages a complete development environment setup. The configuration uses Bitwarden for secure credential management and includes automated package installation across multiple package managers.
+This is a chezmoi dotfiles repository with **two installation modes**: minimal (recommended) and full. Uses Bitwarden for secure credential management and supports both traditional host-based development and modern dev container workflows.
+
+## Installation Modes
+
+### Minimal Mode (Default/Recommended)
+- **Purpose**: Clean base system + dev containers for IntelliJ IDEA Ultimate
+- **Host installs**: Shell environment, essential CLI tools, container runtime only
+- **Language development**: Happens in dev containers (Python, Node, Rust)
+- **Package file**: `packages-minimal.yaml`
+- **Best for**: Clean system, no version conflicts, container-based development
+
+### Full Mode (Legacy/Power Users)  
+- **Purpose**: Everything on host system for maximum performance
+- **Host installs**: All language runtimes, build tools, performance tools
+- **Language development**: Directly on host with mise runtime management
+- **Package file**: `packages.yaml` (original)
+- **Best for**: Bare metal development, maximum tool availability
 
 ## Key Commands
 
@@ -17,10 +33,21 @@ This is a chezmoi dotfiles repository that manages a complete development enviro
 
 The `cz` command is a wrapper function that automatically unlocks Bitwarden when needed.
 
+### Mode Management
+- `./switch-to-minimal.sh` - Switch from full to minimal mode (with backup)
+- Switch to full: Requires fresh chezmoi installation
+
 ### Package Installation
+
+#### Minimal Mode
+- `./run_always_update-packages.sh.tmpl` - Ensure minimal packages installed (no upgrades)
+- `./run_weekly_safe-upgrades.sh.tmpl` - Safe weekly upgrades for CLI tools
+- `./run_onchange_setup-mise-minimal.sh.tmpl` - Minimal mise setup (shell tools only)
+
+#### Full Mode  
 - `./run_onchange_install-dev-environment.sh.tmpl` - Full environment bootstrap (one-time)
-- `./run_always_update-packages.sh.tmpl` - Keep packages current (every apply)
-- Installs across 6 layers: OS → Homebrew → Languages → Shell → Tools → Config
+- `./run_always_update-packages.sh.tmpl` - Install and upgrade all packages (every apply)
+- `./run_onchange_setup-mise.sh.tmpl` - Full mise setup with Python/Node/Rust
 
 ### GPG Key Management
 - `./run_onchange_import-gpg-key.sh.tmpl` - Import GPG key from Bitwarden (when needed)
@@ -33,7 +60,9 @@ The `cz` command is a wrapper function that automatically unlocks Bitwarden when
 ### File Structure
 - `dot_*` files become dotfiles in the home directory (e.g., `dot_zshrc` → `~/.zshrc`)
 - `*.tmpl` files are processed as Go templates with access to Bitwarden data
-- `.chezmoidata/packages.yaml` contains package lists for different package managers
+- `.chezmoidata/packages.yaml` - Full mode package lists
+- `.chezmoidata/packages-minimal.yaml` - Minimal mode package lists  
+- `devcontainer-templates/` - Pre-configured dev containers for Python, Rust, Node.js
 - Shell customizations are in `dot_oh-my-zsh/custom/`
 
 ### Bitwarden Integration (Recently Optimized)
@@ -54,7 +83,15 @@ The `cz` command is a wrapper function that automatically unlocks Bitwarden when
 - GitHub email in "github.com" item's "noreply_email" field
 - Bitwarden CLI (`bw`) installed and unlocked when changes needed
 
-### 6-Layer Installation Architecture
+### Installation Architecture
+
+#### Minimal Mode (4 layers)
+1. **OS packages** - Essential system utilities (git, curl, zsh, podman)
+2. **Homebrew** - Modern CLI tools (ripgrep, bat, eza, fzf, etc.)
+3. **Shell framework** - Oh My Zsh with plugins and Powerlevel10k theme
+4. **Configuration** - Tool-specific configs and aliases
+
+#### Full Mode (6 layers) 
 1. **OS packages** - dnf (Fedora) or apt (Debian/Ubuntu) - Essential system libraries
 2. **Homebrew** - Modern CLI alternatives and cross-platform tools
 3. **Language toolchains** - Rust (rustup), Node.js (mise), Python (mise)
@@ -62,17 +99,63 @@ The `cz` command is a wrapper function that automatically unlocks Bitwarden when
 5. **Development tools** - GitHub CLI, Zellij, lazygit, performance tools  
 6. **Configuration** - Tool-specific configs and optimizations
 
+#### Dev Containers (Minimal Mode)
+- **Language runtimes** live in containers instead of host
+- **Project isolation** via container-per-project
+- **IntelliJ integration** via dev container support
+- **Shared caches** for performance (cargo registry, npm cache, etc.)
+
 **Script Types:**
 - `run_onchange_*` - Execute when script content changes
 - `run_always_*` - Execute on every `chezmoi apply`
 - Templates processed with **runtime** Bitwarden access (not template-time)
 
 ### Development Tools Included
+
+#### Both Modes
 - Modern CLI alternatives: `eza`, `bat`, `fd`, `ripgrep`, `zoxide`
-- Git tools: `git-delta`, `lazygit`, `gh` (GitHub CLI)
-- Rust development: `cargo`, `zellij`
+- Git tools: `git-delta`, `lazygit`, `gh` (GitHub CLI)  
+- Terminal multiplexer: `zellij`
 - Container tools: `podman` (with Docker aliases)
-- Other: `fzf`, `jq`, `yq`, `direnv`, `btop`
+- File navigation: `broot`, `fzf`
+- Data processing: `jq`, `yq`
+- Monitoring: `btop`, `htop`
+
+#### Full Mode Only
+- Language runtimes: Python 3.11, Node.js LTS, Rust toolchain
+- Build tools: `gcc`, `cmake`, `sccache`
+- Rust tools: `cargo-nextest`, `cargo-watch`, `cargo-edit`
+- Python tools: `poetry`, `pipx`, `huggingface_hub`
+
+## Dev Container Templates (Minimal Mode)
+
+Located in `devcontainer-templates/` directory:
+
+### Python Container (`python/.devcontainer.json`)
+- **Base**: `mcr.microsoft.com/devcontainers/python:3.11`
+- **Features**: poetry, pipx, common-utils
+- **Environment**: `PIP_REQUIRE_VIRTUALENV=false` (allows global installs)
+- **Mounts**: zsh config, oh-my-zsh
+- **IDE**: IntelliJ backend configured
+
+### Rust Container (`rust/.devcontainer.json`)  
+- **Base**: `mcr.microsoft.com/devcontainers/rust:1`
+- **Features**: sccache, common-utils
+- **Tools**: cargo-nextest, cargo-watch, cargo-edit
+- **Mounts**: zsh config, cargo registry cache
+- **Performance**: `RUSTC_WRAPPER=sccache`
+
+### Node.js Container (`node/.devcontainer.json`)
+- **Base**: `mcr.microsoft.com/devcontainers/javascript-node:20`
+- **Tools**: pnpm, yarn (global install)
+- **Mounts**: zsh config, npm cache
+- **IDE**: IntelliJ backend configured
+
+### Usage with IntelliJ IDEA Ultimate
+1. Copy appropriate `.devcontainer.json` to project root
+2. **Tools → Dev Containers → Create Dev Container**
+3. IntelliJ builds and connects to container
+4. All language tools available inside container only
 
 ## Recent Critical Fix: Bitwarden Shell Startup Optimization
 
@@ -131,7 +214,23 @@ The `cz` command is a wrapper function that automatically unlocks Bitwarden when
 
 ## Maintenance & Debugging for Claude
 
-### Validate Installation Layers
+### Validate Installation (Mode-Specific)
+
+#### Minimal Mode Validation
+```bash
+# Essential tools (should be present)
+which git curl zsh podman || echo "Essential tools missing"
+which rg bat eza fzf fd || echo "CLI tools missing" 
+which lazygit gh zellij atuin broot || echo "Dev tools missing"
+
+# Language tools (should NOT be on host)
+which python3 node cargo && echo "⚠️ Language runtimes on host (should be in containers)"
+
+# Container runtime
+podman --version && echo "✅ Container runtime available"
+```
+
+#### Full Mode Validation  
 ```bash
 # Layer 1: OS packages
 which gcc git curl python3 || echo "Layer 1 incomplete"
@@ -152,7 +251,33 @@ which gh lazygit zellij atuin || echo "Layer 5 incomplete"
 sccache --show-stats && cargo nextest --version || echo "Layer 6 incomplete"
 ```
 
+### Upgrade Management
+
+#### Minimal Mode  
+```bash
+# Daily (automatic on cz apply)
+./run_always_update-packages.sh.tmpl       # Ensure packages installed (no upgrades)
+
+# Weekly (manual)
+./run_weekly_safe-upgrades.sh.tmpl         # Safe CLI tool upgrades only
+
+# Check what needs manual upgrade
+cat manual-upgrade-checklist.md            # Critical tools checklist
+```
+
+#### Full Mode
+```bash
+# Daily (automatic on cz apply)  
+./run_always_update-packages.sh.tmpl       # Install and upgrade all packages
+
+# Language runtime management
+mise use python@3.11                       # Switch Python version
+mise use node@lts                          # Switch Node version
+```
+
 ### Debug Common Issues
+
+#### Both Modes
 ```bash
 # Bitwarden integration
 bw status                                    # Check vault status
@@ -162,14 +287,47 @@ bw get item "github.com" | jq '.fields[]'    # Verify required fields
 git config --global -l | grep -E "user\.|signing"
 gpg --list-secret-keys 21D39CC1D0B3B44A
 
-# Performance monitoring
-sccache --show-stats                        # Build cache hit rate
+# Shell performance
 atuin stats                                 # Shell history stats
 zsh -c 'time zsh -i -c exit'               # Shell startup time
 ```
 
+#### Minimal Mode Specific
+```bash
+# Container runtime
+podman ps -a                                # Check containers
+podman system info                          # System status
+
+# Dev container issues
+cat devcontainer-templates/README.md        # Usage instructions
+```
+
+#### Full Mode Specific
+```bash
+# Build performance  
+sccache --show-stats                        # Build cache hit rate
+mise list                                   # Runtime versions
+
+# Python environment
+pipx list                                   # Global Python tools
+poetry --version                           # Poetry status
+```
+
 ### Common Troubleshooting
-1. **Shell startup prompts**: Should be fixed, but verify `bw status` and required vault items
-2. **Template errors**: Usually Bitwarden access issues or missing vault items
-3. **Package failures**: Check internet connection, sudo access, and package manager status
-4. **Performance issues**: Verify all layers completed and caches are functioning
+
+#### Minimal Mode
+1. **Missing language tools**: Install in dev container, not on host
+2. **Container not starting**: Check podman status and permissions
+3. **IntelliJ can't find tools**: Use dev container integration
+4. **Shell startup prompts**: Verify `bw status` and vault items
+
+#### Full Mode  
+1. **pip requires virtualenv**: Check mise environment variables in config
+2. **Build cache not working**: Check `sccache --show-stats`
+3. **Runtime conflicts**: Use `mise use` to switch versions
+4. **Template errors**: Usually Bitwarden access or missing vault items
+
+#### Both Modes
+1. **Package failures**: Check internet connection, sudo access, package manager status
+2. **Git signing fails**: Verify GPG key import with `gpg --list-secret-keys`
+3. **Performance issues**: Verify installation layers completed successfully
