@@ -140,9 +140,8 @@ fkill() {
     fi
 }
 
-# Rust performance optimizations
-export RUSTC_WRAPPER="sccache"
-export SCCACHE_DIR="$HOME/.cache/sccache"
+# Rust local development optimizations
+# Note: sccache disabled for local dev (it's for build servers)
 export CARGO_INCREMENTAL=1
 export RUST_BACKTRACE=1
 
@@ -150,7 +149,7 @@ export RUST_BACKTRACE=1
 export MAKEFLAGS="-j$(nproc)"
 export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
 
-# Faster linking
+# Faster linking with lld
 export RUSTFLAGS="-C link-arg=-fuse-ld=lld"
 
 # Load dataset analysis tools

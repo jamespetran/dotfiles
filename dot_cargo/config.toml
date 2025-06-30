@@ -1,0 +1,37 @@
+# Cargo configuration optimized for local development
+# Note: sccache disabled for local dev (designed for build servers)
+
+[build]
+# Use all available CPU cores for parallel builds
+jobs = 0
+
+[target.x86_64-unknown-linux-gnu]
+linker = "gcc"
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[profile.dev]
+# Optimized for fast local development cycles
+incremental = true
+debug = 1
+opt-level = 0
+
+[profile.test]
+# Optimized test builds
+debug = 1
+opt-level = 1
+incremental = true
+
+[profile.release]
+# Production releases
+debug = false
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.bench]
+# Performance benchmarks
+debug = false
+opt-level = 3
+lto = true
+codegen-units = 1
