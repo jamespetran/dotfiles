@@ -1,9 +1,21 @@
+# Practical package set for productive development
+# Includes language runtimes on host for daily workflows
+# Cleaner than full mode, more functional than minimal mode
+
 packages:
   dnf:
+    # Core system utilities
     - git
     - curl
     - zsh
     - util-linux-user
+    - which
+    - findutils
+    - hostname
+    - iproute
+    - shadow-utils
+    - man-db
+    # Essential development tools
     - gcc-c++
     - cmake
     - make
@@ -11,64 +23,56 @@ packages:
     - python3-pip
     - python3-devel
     - openssl-devel
-    - perl
-    - perl-libs
-    - perl-core
+    # Container runtime
     - podman
-    - libstdc++-devel
-    - man-db
-    - which
-    - findutils
-    - hostname
-    - iproute
-    - shadow-utils
-    - htop
+    # Basic debugging
     - strace
     - lsof
     - file
     - tree
   brew:
+    # Essential shell tools
     - fzf
     - fd
     - ripgrep
     - bat
     - zoxide
     - eza
+    # Git enhancements
     - git-delta
-    - btop
-    - jq
-    - yq
-    - tldr
     - lazygit
     - gh
-    - direnv
-    - git-lfs
-    - aria2
+    # Terminal multiplexer
     - zellij
-    # Power user tools - Phase 1
+    # Process monitoring
+    - btop
+    # Data processing
+    - jq
+    - yq
+    # Quick help
+    - tldr
+    # Shell history
     - atuin
-    - git-absorb
-    - git-branchless
-    - bottom
-    - dust
-    - procs
-    - sd
-    - xh
+    # File navigation
+    - broot
+    # Task runner
+    - just
+    # Runtime manager
+    - mise
+    # Essential performance tools (not everything)
     - hyperfine
     - tokei
-    - broot
-    - just
-    - mise
-    # Phase 3: Rust-grade performance tools
-    - sccache
-    - cargo-nextest
-    - cargo-watch
-    - cargo-expand
-    - cargo-edit
-    - cargo-outdated
-    - cargo-audit
-    - cargo-bloat
+    # Infrastructure & DevOps (2025 Focus)
+    - terraform
+    - tflint
+    - terraform-docs
+    - terragrunt
+    - infracost
+    - tenv
+    - checkov
+    - trivy
   apt:
+    # Core system utilities
     - build-essential
     - git
     - curl
@@ -79,7 +83,7 @@ packages:
     - python3-dev
     - libssl-dev
     - podman
-    - htop
+    # Basic debugging
     - strace
     - lsof
     - file

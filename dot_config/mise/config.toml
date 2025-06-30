@@ -1,43 +1,29 @@
-# Mise configuration for universal runtime management
-# See: https://mise.jdx.dev/configuration.html
+# Mise configuration for host development
+# Language runtimes available on host with proper pip configuration
 
 [settings]
-# Automatically trust .mise.toml files in git repositories
-trusted_config_paths = []
-
-# Enable shorthands (e.g., "node" instead of "node@20")
-shorthands_file = "~/.config/mise/shorthands.toml"
-
-# Verbose output for debugging
 verbose = false
-
-# Disable analytics (moved to correct section)
 experimental = true
 
-# Plugin repositories
-plugin_autoupdate_last_check_duration = "7d"
-
-# Rust configuration
 [tools]
-# Keep current Rust installation managed by rustup
-# mise will not interfere with existing rustup setup
+# Python for AI/ML work and general scripting
+python = "3.11"
 
-# Python versions for AI/ML work
-python = "3.11"  # Good balance of features and ML library support
-
-# Node.js for any web tooling
+# Node.js for tooling and web development
 node = "lts"
 
-# Global tools installed via mise
 [env]
-# Rust environment variables
-RUST_BACKTRACE = "1"
-CARGO_INCREMENTAL = "1"
-
-# Python environment
-PYTHONPATH = "."
-PIP_REQUIRE_VIRTUALENV = "true"
-
 # Development settings
 EDITOR = "nvim"
 PAGER = "bat"
+
+# Rust environment variables
+RUST_BACKTRACE = "1"
+
+# Python environment - FIXED: Allow pip installs when needed
+# Don't require virtualenv for mise-managed Python global tools
+# Individual projects should still use virtual environments
+PYTHONPATH = "."
+
+# NOTE: Removed PIP_REQUIRE_VIRTUALENV=true to fix global pip installs
+# Projects should use poetry/pipenv/venv for isolation

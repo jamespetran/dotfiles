@@ -1,7 +1,0 @@
-{{ $installMode := promptStringOnce . "installMode" "Installation mode (minimal/full)" "minimal" -}}
-
-[data]
-  installMode = {{ $installMode | quote }}
-
-[bitwarden]
-  enabled = true
