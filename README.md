@@ -33,7 +33,7 @@ That's it! Your development environment is ready.
 - **Git enhancements** - lazygit, git-delta, advanced aliases  
 - **Terminal multiplexer** - Zellij with custom layouts
 - **File navigation** - broot with development shortcuts
-- **GitHub CLI** - Integrated workflow tools
+- **GitHub CLclaudeI** - Integrated workflow tools
 
 ### Security & Credentials
 - **Bitwarden integration** for secure credential management

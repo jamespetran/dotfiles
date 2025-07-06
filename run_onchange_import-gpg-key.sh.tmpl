@@ -3,7 +3,7 @@ set -euo pipefail
 
 echo "🔑 Checking for GPG private key..."
 
-GPG_KEY_ID="21D39CC1D0B3B44A" # Paste your GPG Key ID here
+GPG_KEY_ID="AC9715E1C25B4B8A" # Paste your GPG Key ID here
 
 # Check if the secret key is already imported
 if gpg --list-secret-keys | grep -q "$GPG_KEY_ID"; then
