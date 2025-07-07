@@ -31,6 +31,8 @@ packages:
     - file
     - tree
   brew:
+    # Core tools
+    - git
     # Essential shell tools
     - fzf
     - fd
