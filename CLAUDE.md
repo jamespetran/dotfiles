@@ -87,7 +87,7 @@ The `cz` command is a wrapper function that automatically unlocks Bitwarden when
 
 #### Minimal Mode (4 layers)
 1. **OS packages** - Essential system utilities (git, curl, zsh, podman)
-2. **Homebrew** - Modern CLI tools (ripgrep, bat, eza, fzf, etc.)
+2. **Homebrew** - Modern CLI tools (ripgrep, bat, fzf, etc.)
 3. **Shell framework** - Oh My Zsh with plugins and Powerlevel10k theme
 4. **Configuration** - Tool-specific configs and aliases
 
@@ -113,7 +113,7 @@ The `cz` command is a wrapper function that automatically unlocks Bitwarden when
 ### Development Tools Included
 
 #### Both Modes
-- Modern CLI alternatives: `eza`, `bat`, `fd`, `ripgrep`, `zoxide`
+- Modern CLI alternatives: `bat`, `fd`, `ripgrep`, `zoxide`
 - Git tools: `git-delta`, `lazygit`, `gh` (GitHub CLI)  
 - Terminal multiplexer: `zellij`
 - Container tools: `podman` (with Docker aliases)
@@ -220,7 +220,7 @@ Located in `devcontainer-templates/` directory:
 ```bash
 # Essential tools (should be present)
 which git curl zsh podman || echo "Essential tools missing"
-which rg bat eza fzf fd || echo "CLI tools missing" 
+which rg bat fzf fd || echo "CLI tools missing" 
 which lazygit gh zellij atuin broot || echo "Dev tools missing"
 
 # Language tools (should NOT be on host)

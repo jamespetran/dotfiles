@@ -25,7 +25,7 @@ That's it! Your development environment is ready.
 
 ### Modern Shell Environment  
 - **Zsh + Oh My Zsh + Powerlevel10k** - Beautiful, fast prompt
-- **Modern CLI tools** - ripgrep, bat, eza, fzf, zoxide
+- **Modern CLI tools** - ripgrep, bat, fzf, zoxide
 - **Encrypted history** - Atuin for searchable shell history
 - **Smart completion** - Enhanced zsh with 50k history
 
@@ -68,7 +68,6 @@ cz status             # Show status
 ### Development Tools
 ```bash
 # Modern file operations
-ls                    # eza with icons
 rg "pattern"          # ripgrep search
 bat file.txt          # syntax highlighted viewing
 
@@ -103,7 +102,6 @@ This environment prioritizes **fast, intuitive tools** that enhance daily develo
 - **ripgrep (`rg`)** - 10x faster than `grep`, respects .gitignore by default, better regex support
 - **fd** - 2x faster than `find`, intuitive syntax, parallel execution
 - **fzf** - Interactive fuzzy finder, integrates everywhere (shell, vim, git)
-- **eza** - Modern `ls` with git status, tree view, better colors
 - **broot** - Interactive file navigator, handles huge directories efficiently
 
 *Note: `rg` and `fd` complement traditional tools rather than replace them - different syntax but powerful for interactive use.*
@@ -143,7 +141,7 @@ This environment prioritizes **fast, intuitive tools** that enhance daily develo
 
 **Command Compatibility**: Traditional commands (`cat`, `ls`, `find`, `grep`) remain available alongside modern alternatives. This prevents script breakage while giving you choice:
 
-- **Interactive work**: Use modern tools (`rg`, `fd`, `bat`, `eza`)
+- **Interactive work**: Use modern tools (`rg`, `fd`, `bat`)
 - **Scripts/automation**: Use traditional tools (`grep`, `find`, `cat`, `ls`)
 - **System monitoring**: Launch `btop` same way you'd launch `htop` (safe upgrade with better UI)
 

@@ -16,7 +16,7 @@ exec zsh
 
 ### What Gets Installed
 - **Shell Environment**: Zsh, Oh My Zsh, Powerlevel10k theme
-- **Modern CLI Tools**: ripgrep, bat, eza, fzf, fd, jq, yq
+- **Modern CLI Tools**: ripgrep, bat, fzf, fd, jq, yq
 - **Git Tools**: git-delta, lazygit, GitHub CLI
 - **Container Runtime**: podman with Docker aliases
 - **Terminal Tools**: zellij, atuin, broot
@@ -81,8 +81,6 @@ mise use node@20            # Switch Node.js version for project
 #### File Operations
 ```bash
 # Listing
-ls                    # eza with icons  
-ll                    # eza -la with icons and details
 tree                  # directory tree view
 
 # Search
@@ -252,7 +250,7 @@ git log --show-signature -1
 
 # Check specific components
 which python node cargo    # Language runtimes
-which rg bat eza fzf       # Modern CLI tools
+which rg bat fzf       # Modern CLI tools
 which lazygit gh zellij    # Development tools
 ```
 
