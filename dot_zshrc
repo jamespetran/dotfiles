@@ -12,6 +12,9 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+
+# Disable Oh My Zsh insecure directory warnings
+export ZSH_DISABLE_COMPFIX=true
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
