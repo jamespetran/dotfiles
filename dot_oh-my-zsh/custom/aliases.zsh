@@ -1,14 +1,5 @@
-# Simple chezmoi alias - scripts handle their own Bitwarden authentication
+# Simple chezmoi alias
 alias cz='chezmoi'
-
-# Modern replacements (keeping originals available)
-alias ls='eza --icons'
-alias ll='eza -la --icons'
-# alias find='fd'
-
-# bat as alternative to cat, not replacement
-alias bcat='bat'
-alias view='bat'
 
 # Git
 alias g='git'

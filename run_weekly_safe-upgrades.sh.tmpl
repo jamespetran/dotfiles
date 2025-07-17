@@ -29,7 +29,7 @@ if command -v brew >/dev/null 2>&1; then
   run_with_spinner "brew update" brew update
   
   # Only upgrade safe, stable CLI tools
-  SAFE_TOOLS="fzf fd ripgrep bat eza git-delta jq yq tldr atuin"
+  SAFE_TOOLS="fzf fd ripgrep bat git-delta jq yq tldr atuin"
   run_with_spinner "Upgrade safe CLI tools" brew upgrade $SAFE_TOOLS || true
 fi
 

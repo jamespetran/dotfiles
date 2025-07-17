@@ -39,7 +39,6 @@ packages:
     - ripgrep
     - bat
     - zoxide
-    - eza
     # Git enhancements
     - git-delta
     - lazygit

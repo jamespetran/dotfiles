@@ -15,7 +15,7 @@ done
 
 # Test 2: Modern CLI tools
 echo -e "\nTesting modern CLI tools..."
-for tool in rg bat eza fzf fd lazygit gh zellij atuin broot jq yq; do
+for tool in rg bat fzf fd lazygit gh zellij atuin broot jq yq; do
     if command -v "$tool" >/dev/null 2>&1; then
         echo "  ✅ $tool: $(which "$tool")"
     else
