@@ -76,14 +76,6 @@ alias zmon='zellij --layout monitoring'
 alias zrust='zellij --layout rust'
 alias zai='zellij --layout ai-dev'
 
-# Power user tool aliases
-alias top='btop'
-alias du='dust'
-alias ps='procs'
-alias sed='sd'
-alias curl='xh'
-alias http='xh'
-
 # Just command runner aliases
 alias j='just'
 alias jd='just dev'
